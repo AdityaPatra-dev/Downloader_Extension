@@ -1,34 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 580" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="100%" height="100%">
   <defs>
     <style>
       @keyframes neonTrace {
-        0% { stroke-dashoffset: 2000; }
+        0% { stroke-dashoffset: 2600; }
         100% { stroke-dashoffset: 0; }
       }
       @keyframes floatIso {
         0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-7px); }
+        50% { transform: translateY(-6px); }
       }
       @keyframes pulseGlow {
-        0%, 100% { opacity: 0.2; filter: drop-shadow(0 0 12px rgba(139,92,246,0.5)); }
-        50% { opacity: 0.45; filter: drop-shadow(0 0 24px rgba(56,189,248,0.8)); }
+        0%, 100% { opacity: 0.2; filter: drop-shadow(0 0 8px rgba(139,92,246,0.4)); }
+        50% { opacity: 0.45; filter: drop-shadow(0 0 18px rgba(56,189,248,0.7)); }
       }
       @keyframes flowData {
-        0% { stroke-dashoffset: 160; }
+        0% { stroke-dashoffset: 120; }
         100% { stroke-dashoffset: 0; }
       }
       .anim-border {
-        stroke-dasharray: 200 450;
-        animation: neonTrace 9s linear infinite;
+        stroke-dasharray: 220 500;
+        animation: neonTrace 10s linear infinite;
       }
       .iso-floating {
-        animation: floatIso 4.5s ease-in-out infinite;
+        animation: floatIso 4s ease-in-out infinite;
       }
       .pulse-light {
         animation: pulseGlow 3.5s ease-in-out infinite;
       }
       .data-pipe {
-        stroke-dasharray: 12 10;
+        stroke-dasharray: 10 8;
         animation: flowData 2s linear infinite;
       }
     </style>
@@ -42,42 +42,45 @@
 
     <linearGradient id="neonBeam" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="33%" stop-color="#818cf8" />
-      <stop offset="66%" stop-color="#c084fc" />
+      <stop offset="30%" stop-color="#818cf8" />
+      <stop offset="70%" stop-color="#c084fc" />
       <stop offset="100%" stop-color="#34d399" />
     </linearGradient>
 
-    <linearGradient id="boxBg" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="colBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1e293b" />
       <stop offset="100%" stop-color="#0f172a" />
     </linearGradient>
 
-    <linearGradient id="videoIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- 3D Video Isometric Cube -->
+    <linearGradient id="vIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#60a5fa" />
       <stop offset="100%" stop-color="#3b82f6" />
     </linearGradient>
-    <linearGradient id="videoIsoLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="vIsoLeft" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1d4ed8" />
       <stop offset="100%" stop-color="#1e3a8a" />
     </linearGradient>
-    <linearGradient id="videoIsoRight" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="vIsoRight" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#2563eb" />
       <stop offset="100%" stop-color="#1d4ed8" />
     </linearGradient>
 
-    <linearGradient id="audioIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- 3D Audio Isometric Cube -->
+    <linearGradient id="aIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#f472b6" />
       <stop offset="100%" stop-color="#ec4899" />
     </linearGradient>
-    <linearGradient id="audioIsoLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="aIsoLeft" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#be185d" />
       <stop offset="100%" stop-color="#831843" />
     </linearGradient>
-    <linearGradient id="audioIsoRight" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="aIsoRight" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#db2777" />
       <stop offset="100%" stop-color="#9d174d" />
     </linearGradient>
 
+    <!-- 3D Output MP4 Prism -->
     <linearGradient id="outIsoTop" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#34d399" />
       <stop offset="100%" stop-color="#10b981" />
@@ -96,157 +99,248 @@
     </filter>
   </defs>
 
-  <!-- Background Canvas -->
-  <rect width="1100" height="580" rx="16" fill="url(#bgGrad)" />
+  <!-- Background Base Canvas -->
+  <rect width="1100" height="620" rx="16" fill="url(#bgGrad)" />
 
   <!-- Outer 2D Dynamic Animated Glowing Border -->
-  <rect x="2" y="2" width="1096" height="576" rx="15" fill="none" stroke="url(#neonBeam)" stroke-width="2.5" class="anim-border" />
+  <rect x="2" y="2" width="1096" height="616" rx="15" fill="none" stroke="url(#neonBeam)" stroke-width="2.5" class="anim-border" />
 
-  <!-- Section Header -->
-  <g transform="translate(60, 36)">
+  <!-- Section Header (Symmetrically aligned at x = 50) -->
+  <g transform="translate(50, 32)">
     <rect width="250" height="24" rx="12" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
-    <text x="14" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#d8b4fe" letter-spacing="0.5">SOUL BROWSER REA RE-ENGINEERED</text>
-    <text x="0" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="800" fill="#f8fafc">Dual-Track ISO-BMFF CMAF Muxing Pipeline</text>
-    <text x="0" y="78" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">Zero-transcoding in-memory byte manipulation: merges video fragments &amp; audio streams into compliant MP4</text>
+    <text x="14" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#d8b4fe" letter-spacing="0.5">SOUL BROWSER REA DECOMPILATION</text>
+    <text x="0" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="800" fill="#f8fafc">Dual-Track ISO-BMFF CMAF Stream Muxing Pipeline</text>
+    <text x="0" y="75" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">Zero transcoding penalty: client-side box surgery interleaves separate video &amp; audio playlists into a synchronized .mp4</text>
   </g>
 
-  <!-- DATA FLOW CONNECTING PIPES -->
-  <g transform="translate(60, 240)">
-    <!-- Video Stream Route (Blue) -->
-    <path d="M 230 40 L 330 40 L 330 90 L 440 90" fill="none" stroke="#1e293b" stroke-width="4" />
-    <path d="M 230 40 L 330 40 L 330 90 L 440 90" fill="none" stroke="#38bdf8" stroke-width="2.5" class="data-pipe" />
+  <!-- ==================== CONNECTING PIPES (Centered and Aligned) ==================== -->
+  <g>
+    <!-- Pipe 1: Stage 1 Video (y = 205) -> Stage 2 Step 1 (y = 210) -->
+    <path d="M 340 205 C 365 205, 370 210, 395 210" fill="none" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 340 205 C 365 205, 370 210, 395 210" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" class="data-pipe"/>
 
-    <!-- Audio Stream Route (Pink) -->
-    <path d="M 230 160 L 330 160 L 330 110 L 440 110" fill="none" stroke="#1e293b" stroke-width="4" />
-    <path d="M 230 160 L 330 160 L 330 110 L 440 110" fill="none" stroke="#ec4899" stroke-width="2.5" class="data-pipe" />
+    <!-- Pipe 2: Stage 1 Audio (y = 390) -> Stage 2 Step 2 (y = 295) -->
+    <path d="M 340 390 C 370 390, 365 295, 395 295" fill="none" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 340 390 C 370 390, 365 295, 395 295" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="data-pipe"/>
 
-    <!-- Surgery to Interleaver Pipe (Purple) -->
-    <path d="M 680 100 L 750 100" fill="none" stroke="#1e293b" stroke-width="4" />
-    <path d="M 680 100 L 750 100" fill="none" stroke="#a855f7" stroke-width="3" class="data-pipe" />
+    <!-- Pipe 3: Stage 2 Surgery Out (y = 325) -> Stage 3 Container (y = 325) -->
+    <path d="M 705 325 L 760 325" fill="none" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 705 325 L 760 325" fill="none" stroke="#a855f7" stroke-width="3" stroke-linecap="round" class="data-pipe"/>
   </g>
 
-  <!-- STAGE 1: DUAL HLS INPUT STREAMS -->
-  <g transform="translate(60, 150)">
-    <!-- Video Track Card -->
-    <g transform="translate(0, 0)" filter="url(#boxShadow)">
-      <rect width="230" height="110" rx="10" fill="url(#boxBg)" stroke="#2563eb" stroke-width="1.2" />
-      <rect width="230" height="28" rx="10" fill="#1e3a8a" />
-      <text x="12" y="19" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#93c5fd">📹 VIDEO TRACK (#EXT-X-STREAM)</text>
-      
-      <text x="14" y="52" font-family="monospace" font-size="11" fill="#38bdf8">init.mp4 (Track ID: 1)</text>
-      <text x="14" y="70" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">H.264 / AV1 Video Frames</text>
-      <text x="14" y="90" font-family="monospace" font-size="10" fill="#64748b">0.m4s, 1.m4s, 2.m4s ...</text>
+  <!-- ==================== STAGE 1: DUAL INPUT STREAMS (x = 50, w = 290, h = 425) ==================== -->
+  <g transform="translate(50, 115)" filter="url(#boxShadow)">
+    <rect width="290" height="425" rx="12" fill="url(#colBg)" stroke="#334155" stroke-width="1.2"/>
+    
+    <!-- Stage Header -->
+    <rect width="290" height="38" rx="12" fill="#0f172a"/>
+    <rect y="24" width="290" height="14" fill="#0f172a"/>
+    <circle cx="20" cy="19" r="10" fill="#3b82f6"/>
+    <text x="20" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">1</text>
+    <text x="38" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#93c5fd">SEPARATE CMAF TRACKS</text>
 
-      <!-- 3D Video Isometric Cube Mini -->
-      <g transform="translate(185, 55) scale(0.65)" class="iso-floating">
-        <polygon points="20,0 40,11 20,23 0,11" fill="url(#videoIsoTop)" />
-        <polygon points="0,11 20,23 20,45 0,33" fill="url(#videoIsoLeft)" />
-        <polygon points="20,23 40,11 40,33 20,45" fill="url(#videoIsoRight)" />
-      </g>
-    </g>
-
-    <!-- Audio Track Card -->
-    <g transform="translate(0, 140)" filter="url(#boxShadow)">
-      <rect width="230" height="110" rx="10" fill="url(#boxBg)" stroke="#db2777" stroke-width="1.2" />
-      <rect width="230" height="28" rx="10" fill="#831843" />
-      <text x="12" y="19" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#fbcfe8">🎵 AUDIO TRACK (#EXT-X-MEDIA)</text>
-      
-      <text x="14" y="52" font-family="monospace" font-size="11" fill="#f472b6">init.mp4 (Track ID: 1 ⚠️)</text>
-      <text x="14" y="70" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">AAC Stereo 128-320kbps</text>
-      <text x="14" y="90" font-family="monospace" font-size="10" fill="#64748b">aac_0.m4s, aac_1.m4s ...</text>
-
-      <!-- 3D Audio Isometric Cube Mini -->
-      <g transform="translate(185, 55) scale(0.65)" class="iso-floating">
-        <polygon points="20,0 40,11 20,23 0,11" fill="url(#audioIsoTop)" />
-        <polygon points="0,11 20,23 20,45 0,33" fill="url(#audioIsoLeft)" />
-        <polygon points="20,23 40,11 40,33 20,45" fill="url(#audioIsoRight)" />
-      </g>
-    </g>
-  </g>
-
-  <!-- STAGE 2: IN-MEMORY BOX SURGERY -->
-  <g transform="translate(500, 150)" filter="url(#boxShadow)">
-    <rect width="240" height="250" rx="12" fill="url(#boxBg)" stroke="#8b5cf6" stroke-width="1.5" />
-    <rect width="240" height="34" rx="12" fill="#3b0764" />
-    <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#e9d5ff">⚙️ ISO-BMFF BOX SURGERY</text>
-
-    <!-- Code / Offset Inspection Blocks -->
-    <g transform="translate(14, 48)">
-      <rect width="212" height="46" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
-      <text x="10" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">1. Audio trak Reassignment</text>
-      <text x="10" y="34" font-family="monospace" font-size="9" fill="#94a3b8">setUint32(trakOffset + 28, 2)</text>
-    </g>
-
-    <g transform="translate(14, 102)">
-      <rect width="212" height="46" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
-      <text x="10" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#c084fc">2. Audio trex Patching</text>
-      <text x="10" y="34" font-family="monospace" font-size="9" fill="#94a3b8">setUint32(trexOffset + 12, 2)</text>
-    </g>
-
-    <g transform="translate(14, 156)">
-      <rect width="212" height="46" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
-      <text x="10" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#f43f5e">3. Live tfhd Audio Patching</text>
-      <text x="10" y="34" font-family="monospace" font-size="9" fill="#94a3b8">setUint32(tfhdPos + 12, 2)</text>
-    </g>
-
-    <g transform="translate(14, 210)">
-      <text x="0" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="600" fill="#a7f3d0">✓ Prevents Track ID #1 Collision</text>
-      <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" fill="#64748b">Ported directly from Soul Browser DownSaveSplit</text>
-    </g>
-  </g>
-
-  <!-- STAGE 3: INTERLEAVED SYNCHRONIZED STREAM & 3D OUTPUT -->
-  <g transform="translate(810, 150)" filter="url(#boxShadow)">
-    <rect width="230" height="250" rx="12" fill="url(#boxBg)" stroke="#10b981" stroke-width="1.5" />
-    <rect width="230" height="34" rx="12" fill="#064e3b" />
-    <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#a7f3d0">📦 INTERLEAVED OUTPUT</text>
-
-    <!-- Chunk sequence visualization -->
+    <!-- Sub-Box 1A: Video Track Card (y = 50, h = 170) -->
     <g transform="translate(14, 50)">
-      <rect width="202" height="22" rx="4" fill="#047857" />
-      <text x="8" y="15" font-family="monospace" font-size="9" font-weight="700" fill="#ecfdf5">[Merged Init: V-moov + A-moov]</text>
+      <rect width="262" height="170" rx="8" fill="#020617" stroke="#2563eb" stroke-width="1.2"/>
+      
+      <!-- Card Titlebar -->
+      <rect width="262" height="26" rx="8" fill="#1e3a8a"/>
+      <rect y="18" width="262" height="8" fill="#1e3a8a"/>
+      <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="700" fill="#bfdbfe">📹 VIDEO STREAM (#EXT-X-STREAM)</text>
+      
+      <!-- Content & Details -->
+      <g transform="translate(10, 36)">
+        <text x="0" y="14" font-family="monospace" font-size="10" font-weight="700" fill="#38bdf8">init.mp4 [moov / trak 1]</text>
+        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#94a3b8">H.264 / AV1 1080p Video Fragments</text>
+        <text x="0" y="46" font-family="monospace" font-size="9.5" fill="#64748b">0.m4s, 1.m4s, 2.m4s ...</text>
+      </g>
+
+      <!-- 3D Video Isometric Cube -->
+      <g transform="translate(196, 42) scale(0.9)" class="iso-floating">
+        <polygon points="20,0 40,11 20,23 0,11" fill="url(#vIsoTop)" />
+        <polygon points="0,11 20,23 20,45 0,33" fill="url(#vIsoLeft)" />
+        <polygon points="20,23 40,11 40,33 20,45" fill="url(#vIsoRight)" />
+      </g>
+
+      <!-- Track Info Badge -->
+      <g transform="translate(10, 134)">
+        <rect width="242" height="24" rx="4" fill="#1e1b4b" stroke="#3b82f6" stroke-width="0.8"/>
+        <text x="8" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="600" fill="#93c5fd">Native Track ID: #1 (Video Master)</text>
+      </g>
     </g>
 
-    <g transform="translate(14, 78)">
-      <rect width="96" height="20" rx="4" fill="#1e3a8a" />
-      <text x="6" y="14" font-family="monospace" font-size="9" fill="#93c5fd">Video Seq 0</text>
+    <!-- Sub-Box 1B: Audio Track Card (y = 235, h = 170) -->
+    <g transform="translate(14, 235)">
+      <rect width="262" height="170" rx="8" fill="#020617" stroke="#db2777" stroke-width="1.2"/>
+      
+      <!-- Card Titlebar -->
+      <rect width="262" height="26" rx="8" fill="#831843"/>
+      <rect y="18" width="262" height="8" fill="#831843"/>
+      <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="700" fill="#fbcfe8">🎵 AUDIO STREAM (#EXT-X-MEDIA)</text>
+      
+      <!-- Content & Details -->
+      <g transform="translate(10, 36)">
+        <text x="0" y="14" font-family="monospace" font-size="10" font-weight="700" fill="#f472b6">init.mp4 [moov / trak 1 ⚠️]</text>
+        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#94a3b8">AAC Stereo Audio Fragments</text>
+        <text x="0" y="46" font-family="monospace" font-size="9.5" fill="#64748b">aac_0.m4s, aac_1.m4s ...</text>
+      </g>
 
-      <rect x="106" y="0" width="96" height="20" rx="4" fill="#831843" />
-      <text x="112" y="14" font-family="monospace" font-size="9" fill="#fbcfe8">Audio Seq 0</text>
+      <!-- 3D Audio Isometric Cube -->
+      <g transform="translate(196, 42) scale(0.9)" class="iso-floating">
+        <polygon points="20,0 40,11 20,23 0,11" fill="url(#aIsoTop)" />
+        <polygon points="0,11 20,23 20,45 0,33" fill="url(#aIsoLeft)" />
+        <polygon points="20,23 40,11 40,33 20,45" fill="url(#aIsoRight)" />
+      </g>
+
+      <!-- Collision Warning Badge -->
+      <g transform="translate(10, 134)">
+        <rect width="242" height="24" rx="4" fill="#4c0519" stroke="#db2777" stroke-width="0.8"/>
+        <text x="8" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#f43f5e">⚠️ Collision: Audio also claims Track ID #1</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== STAGE 2: IN-MEMORY BOX SURGERY (x = 395, w = 310, h = 425) ==================== -->
+  <g transform="translate(395, 115)" filter="url(#boxShadow)">
+    <rect width="310" height="425" rx="12" fill="url(#colBg)" stroke="#8b5cf6" stroke-width="1.4"/>
+    
+    <!-- Stage Header -->
+    <rect width="310" height="38" rx="12" fill="#3b0764"/>
+    <rect y="24" width="310" height="14" fill="#3b0764"/>
+    <circle cx="20" cy="19" r="10" fill="#a855f7"/>
+    <text x="20" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">2</text>
+    <text x="38" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#f3e8ff">IN-MEMORY BOX SURGERY</text>
+
+    <!-- Source attribution pill -->
+    <g transform="translate(14, 48)">
+      <rect width="282" height="20" rx="4" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.6"/>
+      <text x="10" y="14" font-family="monospace" font-size="8.5" fill="#a5b4fc">DownSaveSplit.java &amp; DownParseM3u8.java</text>
     </g>
 
-    <g transform="translate(14, 104)">
-      <rect width="96" height="20" rx="4" fill="#1e3a8a" />
-      <text x="6" y="14" font-family="monospace" font-size="9" fill="#93c5fd">Video Seq 1</text>
-
-      <rect x="106" y="0" width="96" height="20" rx="4" fill="#831843" />
-      <text x="112" y="14" font-family="monospace" font-size="9" fill="#fbcfe8">Audio Seq 1</text>
+    <!-- Step 1: Audio trak Reassignment (y = 76, h = 90) -->
+    <g transform="translate(14, 76)">
+      <rect width="282" height="90" rx="8" fill="#020617" stroke="#334155" stroke-width="1"/>
+      <rect width="282" height="22" rx="8" fill="#1e293b"/>
+      <rect y="16" width="282" height="6" fill="#1e293b"/>
+      <text x="10" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="700" fill="#38bdf8">STEP A: Audio trak Reassignment</text>
+      
+      <text x="10" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" fill="#94a3b8">Mutates audio track_id from 1 ➔ 2 at offset 28:</text>
+      <rect x="10" y="46" width="262" height="22" rx="4" fill="#0f172a" stroke="#0284c7" stroke-width="0.6"/>
+      <text x="16" y="61" font-family="monospace" font-size="8.5" font-weight="700" fill="#38bdf8">setUint32(aTrakOffset + 28, 2);</text>
+      <text x="10" y="80" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" fill="#64748b">Resolves ID collision before moov injection</text>
     </g>
 
-    <!-- 3D Isometric Output Prism Display -->
-    <g transform="translate(85, 140) scale(1.1)" class="iso-floating">
+    <!-- Step 2: Audio trex Injection (y = 176, h = 90) -->
+    <g transform="translate(14, 176)">
+      <rect width="282" height="90" rx="8" fill="#020617" stroke="#334155" stroke-width="1"/>
+      <rect width="282" height="22" rx="8" fill="#1e293b"/>
+      <rect y="16" width="282" height="6" fill="#1e293b"/>
+      <text x="10" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="700" fill="#c084fc">STEP B: Audio trex &amp; moov Splicing</text>
+      
+      <text x="10" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" fill="#94a3b8">Sets trex ID to 2 and splices aTrak into moov:</text>
+      <rect x="10" y="46" width="262" height="22" rx="4" fill="#0f172a" stroke="#7c3aed" stroke-width="0.6"/>
+      <text x="16" y="61" font-family="monospace" font-size="8.5" font-weight="700" fill="#c084fc">setUint32(aTrexOffset + 12, 2);</text>
+      <text x="10" y="80" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" fill="#64748b">Inserts aTrak &amp; aTrex before mvex terminator</text>
+    </g>
+
+    <!-- Step 3: Live tfhd Patching (y = 276, h = 90) -->
+    <g transform="translate(14, 276)">
+      <rect width="282" height="90" rx="8" fill="#020617" stroke="#334155" stroke-width="1"/>
+      <rect width="282" height="22" rx="8" fill="#1e293b"/>
+      <rect y="16" width="282" height="6" fill="#1e293b"/>
+      <text x="10" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="700" fill="#f43f5e">STEP C: Real-Time tfhd Fragment Patch</text>
+      
+      <text x="10" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" fill="#94a3b8">Rewrites track_id on every streaming audio chunk:</text>
+      <rect x="10" y="46" width="262" height="22" rx="4" fill="#0f172a" stroke="#e11d48" stroke-width="0.6"/>
+      <text x="16" y="61" font-family="monospace" font-size="8.5" font-weight="700" fill="#f43f5e">setUint32(segData + tfhdPos + 12, 2);</text>
+      <text x="10" y="80" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" fill="#64748b">Guarantees player pairs audio frames with track #2</text>
+    </g>
+
+    <!-- Success Outcome Badge (y = 376) -->
+    <g transform="translate(14, 376)">
+      <rect width="282" height="34" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="10" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#34d399">✓ Zero Track Collision · Perfect A/V Sync</text>
+      <text x="10" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" fill="#a7f3d0">Pure JavaScript DataView box reassembly</text>
+    </g>
+  </g>
+
+  <!-- ==================== STAGE 3: INTERLEAVED SYNCHRONIZED MP4 (x = 760, w = 290, h = 425) ==================== -->
+  <g transform="translate(760, 115)" filter="url(#boxShadow)">
+    <rect width="290" height="425" rx="12" fill="url(#colBg)" stroke="#10b981" stroke-width="1.4"/>
+    
+    <!-- Stage Header -->
+    <rect width="290" height="38" rx="12" fill="#064e3b"/>
+    <rect y="24" width="290" height="14" fill="#064e3b"/>
+    <circle cx="20" cy="19" r="10" fill="#10b981"/>
+    <text x="20" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#022c22" text-anchor="middle">3</text>
+    <text x="38" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#a7f3d0">SYNCHRONIZED MP4 OUTPUT</text>
+
+    <!-- Chunk Sequence Visualization Box -->
+    <g transform="translate(14, 50)">
+      <rect width="262" height="120" rx="8" fill="#020617" stroke="#059669" stroke-width="1"/>
+      
+      <!-- Merged Init Row -->
+      <rect x="8" y="10" width="246" height="22" rx="4" fill="#047857"/>
+      <text x="131" y="25" font-family="monospace" font-size="9" font-weight="700" fill="#ecfdf5" text-anchor="middle">[Merged Init: V-moov + A-moov]</text>
+
+      <!-- Interleaved Chunks Row 0 -->
+      <g transform="translate(8, 38)">
+        <rect width="120" height="20" rx="3" fill="#1e3a8a" stroke="#2563eb" stroke-width="0.6"/>
+        <text x="60" y="14" font-family="monospace" font-size="8.5" fill="#93c5fd" text-anchor="middle">Video Chk 0</text>
+
+        <rect x="126" y="0" width="120" height="20" rx="3" fill="#831843" stroke="#db2777" stroke-width="0.6"/>
+        <text x="186" y="14" font-family="monospace" font-size="8.5" fill="#fbcfe8" text-anchor="middle">Audio Chk 0</text>
+      </g>
+
+      <!-- Interleaved Chunks Row 1 -->
+      <g transform="translate(8, 64)">
+        <rect width="120" height="20" rx="3" fill="#1e3a8a" stroke="#2563eb" stroke-width="0.6"/>
+        <text x="60" y="14" font-family="monospace" font-size="8.5" fill="#93c5fd" text-anchor="middle">Video Chk 1</text>
+
+        <rect x="126" y="0" width="120" height="20" rx="3" fill="#831843" stroke="#db2777" stroke-width="0.6"/>
+        <text x="186" y="14" font-family="monospace" font-size="8.5" fill="#fbcfe8" text-anchor="middle">Audio Chk 1</text>
+      </g>
+
+      <!-- Interleaved Chunks Row 2 -->
+      <g transform="translate(8, 90)">
+        <rect width="120" height="20" rx="3" fill="#1e3a8a" stroke="#2563eb" stroke-width="0.6"/>
+        <text x="60" y="14" font-family="monospace" font-size="8.5" fill="#93c5fd" text-anchor="middle">Video Chk N</text>
+
+        <rect x="126" y="0" width="120" height="20" rx="3" fill="#831843" stroke="#db2777" stroke-width="0.6"/>
+        <text x="186" y="14" font-family="monospace" font-size="8.5" fill="#fbcfe8" text-anchor="middle">Audio Chk N</text>
+      </g>
+    </g>
+
+    <!-- 3D Isometric Output Prism Display (Centered in Stage 3) -->
+    <g transform="translate(145, 230) scale(1.15)" class="iso-floating">
       <!-- 3D Cube Base -->
-      <polygon points="30,0 60,16 30,32 0,16" fill="url(#outIsoTop)" />
-      <polygon points="0,16 30,32 30,64 0,48" fill="url(#outIsoLeft)" />
-      <polygon points="30,32 60,16 60,48 30,64" fill="url(#outIsoRight)" />
+      <polygon points="0,-18 32,-2 0,14 -32,-2" fill="url(#outIsoTop)" />
+      <polygon points="-32,-2 0,14 0,44 -32,28" fill="url(#outIsoLeft)" />
+      <polygon points="0,14 32,-2 32,28 0,44" fill="url(#outIsoRight)" />
 
       <!-- Center MP4 Emblem -->
-      <text x="22" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="900" fill="#ffffff">MP4</text>
+      <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">MP4</text>
     </g>
 
-    <!-- Compliance Badge -->
-    <g transform="translate(14, 218)">
-      <rect width="202" height="22" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="1" />
-      <text x="12" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#34d399">100% ISO-BMFF Compliant File</text>
+    <!-- Compliance & Compatibility Badges -->
+    <g transform="translate(14, 320)">
+      <rect width="262" height="26" rx="5" fill="#020617" stroke="#10b981" stroke-width="0.8"/>
+      <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="700" fill="#34d399">✓ 100% ISO-BMFF Compliant</text>
+    </g>
+
+    <g transform="translate(14, 354)">
+      <rect width="262" height="48" rx="6" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+      <text x="10" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="600" fill="#e2e8f0">Native Playback Verified:</text>
+      <text x="10" y="34" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" fill="#94a3b8">VLC · QuickTime · Windows Media · Browsers</text>
     </g>
   </g>
 
-  <!-- BOTTOM FOOTER NOTE -->
-  <g transform="translate(60, 480)">
-    <rect width="980" height="42" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1" />
+  <!-- ==================== BOTTOM FOOTER NOTE ==================== -->
+  <g transform="translate(50, 555)">
+    <rect width="1000" height="42" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1" />
     <circle cx="24" cy="21" r="5" fill="#10b981" />
-    <text x="38" y="25" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">
-      <tspan font-weight="700" fill="#38bdf8">Zero Transcoding Penalty:</tspan> Streams are muxed losslessly at line-rate download speeds (~50+ MB/s) with zero CPU strain and zero audio desync.
+    <text x="38" y="25" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11.5" font-weight="500" fill="#cbd5e1">
+      <tspan font-weight="700" fill="#38bdf8">Zero Transcoding Penalty:</tspan> Merges in pure browser memory at wire speed (~50+ MB/s) with zero external binaries (no FFmpeg needed).
     </text>
   </g>
 </svg>

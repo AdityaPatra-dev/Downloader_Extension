@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" width="100%" height="100%">
+  <defs>
+    <style>
+      @keyframes waveFlowFast {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-600px); }
+      }
+      @keyframes waveFlowMid {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-600px); }
+      }
+      @keyframes waveFlowSlow {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-600px); }
+      }
+      @keyframes bubbleFloat {
+        0% { transform: translateY(0px) scale(0.8); opacity: 0.3; }
+        50% { transform: translateY(-25px) scale(1.1); opacity: 0.8; }
+        100% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+      }
+      @keyframes pulseGlow {
+        0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 10px rgba(56,189,248,0.5)); }
+        50% { opacity: 0.8; filter: drop-shadow(0 0 20px rgba(168,85,247,0.8)); }
+      }
+
+      .wave-slow {
+        animation: waveFlowSlow 18s linear infinite;
+      }
+      .wave-mid {
+        animation: waveFlowMid 11s linear infinite;
+      }
+      .wave-fast {
+        animation: waveFlowFast 6.5s linear infinite;
+      }
+      .bubble-1 { animation: bubbleFloat 4s ease-in-out infinite; }
+      .bubble-2 { animation: bubbleFloat 5s ease-in-out infinite 1.5s; }
+      .bubble-3 { animation: bubbleFloat 4.5s ease-in-out infinite 0.7s; }
+      .bubble-4 { animation: bubbleFloat 6s ease-in-out infinite 2.2s; }
+      .bubble-5 { animation: bubbleFloat 5.2s ease-in-out infinite 3s; }
+      .crest-pulse { animation: pulseGlow 4s ease-in-out infinite; }
+    </style>
+
+    <!-- Linear Gradients for Fluid Layers -->
+    <linearGradient id="fluidBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#020617" stop-opacity="0" />
+      <stop offset="100%" stop-color="#080c14" />
+    </linearGradient>
+
+    <!-- Deep Wave: Indigo / Blue -->
+    <linearGradient id="deepWave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#312e81" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Mid Wave: Purple / Magenta -->
+    <linearGradient id="midWave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.45" />
+      <stop offset="50%" stop-color="#c084fc" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.45" />
+    </linearGradient>
+
+    <!-- Fore Wave: Cyan / Emerald -->
+    <linearGradient id="foreWave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.5" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.5" />
+    </linearGradient>
+
+    <!-- Crest Neon Stroke -->
+    <linearGradient id="crestStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="30%" stop-color="#818cf8" />
+      <stop offset="70%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <filter id="fluidGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Base Transparent Frame -->
+  <rect width="1200" height="120" fill="url(#fluidBg)" />
+
+  <!-- ==================== LAYER 1: DEEP FLUID WAVE (Slow) ==================== -->
+  <g class="wave-slow">
+    <path d="M 0 65 Q 150 35, 300 65 T 600 65 T 900 65 T 1200 65 T 1500 65 T 1800 65 T 2100 65 T 2400 65 L 2400 120 L 0 120 Z" 
+          fill="url(#deepWave)" />
+  </g>
+
+  <!-- ==================== LAYER 2: MID FLUID WAVE (Medium) ==================== -->
+  <g class="wave-mid">
+    <path d="M 0 75 Q 150 100, 300 75 T 600 75 T 900 75 T 1200 75 T 1500 75 T 1800 75 T 2100 75 T 2400 75 L 2400 120 L 0 120 Z" 
+          fill="url(#midWave)" />
+  </g>
+
+  <!-- ==================== LAYER 3: FORE FLUID WAVE (Fast) ==================== -->
+  <g class="wave-fast">
+    <path d="M 0 85 Q 150 60, 300 85 T 600 85 T 900 85 T 1200 85 T 1500 85 T 1800 85 T 2100 85 T 2400 85 L 2400 120 L 0 120 Z" 
+          fill="url(#foreWave)" />
+    <!-- Dynamic Glowing Crest Line -->
+    <path d="M 0 85 Q 150 60, 300 85 T 600 85 T 900 85 T 1200 85 T 1500 85 T 1800 85 T 2100 85 T 2400 85" 
+          fill="none" stroke="url(#crestStroke)" stroke-width="2.5" class="crest-pulse" />
+  </g>
+
+  <!-- ==================== BIOLUMINESCENT FLUID PARTICLES ==================== -->
+  <g>
+    <circle cx="180" cy="95" r="3" fill="#38bdf8" class="bubble-1" />
+    <circle cx="360" cy="100" r="4" fill="#c084fc" class="bubble-2" />
+    <circle cx="580" cy="90" r="2.5" fill="#34d399" class="bubble-3" />
+    <circle cx="820" cy="105" r="3.5" fill="#38bdf8" class="bubble-4" />
+    <circle cx="1040" cy="95" r="4.5" fill="#818cf8" class="bubble-5" />
+  </g>
+</svg>

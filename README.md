@@ -15,6 +15,10 @@
   <b>The powerful media sniffing, universal extraction, and dual-track stream reassembly engine of Android's famous Soul Browser — reverse engineered with REA and brought to all desktop PC browsers.</b>
 </p>
 
+<p align="center">
+  <img src="assets/fluid_header.svg" alt="Dynamic Fluid Wave Flow" width="100%">
+</p>
+
 ---
 
 ## ⚡ Overview
@@ -250,3 +254,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 * **Soul Browser** is developed by [SoulSoft](https://play.google.com/store/apps/details?id=com.mycompany.app.soulbrowser). This extension is an independent, non-commercial clean-room re-implementation of its public algorithmic concepts for PC desktop browsers.
 * Reverse engineered with **[REA (Reverse Engineer Anything)](https://github.com)**.
+
+<p align="center">
+  <img src="assets/fluid_footer.svg" alt="Dynamic Fluid Wave Footer" width="100%">
+</p>

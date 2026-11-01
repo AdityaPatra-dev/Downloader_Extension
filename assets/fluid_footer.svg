@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 140" width="100%" height="100%">
+  <defs>
+    <style>
+      @keyframes waveFlowReverseFast {
+        0% { transform: translateX(-600px); }
+        100% { transform: translateX(0); }
+      }
+      @keyframes waveFlowReverseMid {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-600px); }
+      }
+      @keyframes waveFlowReverseSlow {
+        0% { transform: translateX(-600px); }
+        100% { transform: translateX(0); }
+      }
+      @keyframes particleRise {
+        0% { transform: translateY(20px) scale(0.7); opacity: 0; }
+        50% { transform: translateY(-10px) scale(1.1); opacity: 0.8; }
+        100% { transform: translateY(-40px) scale(0.7); opacity: 0; }
+      }
+      @keyframes neonPulse {
+        0%, 100% { opacity: 0.5; filter: drop-shadow(0 0 8px rgba(52,211,153,0.6)); }
+        50% { opacity: 0.9; filter: drop-shadow(0 0 18px rgba(56,189,248,0.9)); }
+      }
+
+      .wave-rev-slow {
+        animation: waveFlowReverseSlow 16s linear infinite;
+      }
+      .wave-rev-mid {
+        animation: waveFlowReverseMid 10s linear infinite;
+      }
+      .wave-rev-fast {
+        animation: waveFlowReverseFast 7s linear infinite;
+      }
+      .particle-1 { animation: particleRise 4.5s ease-in-out infinite; }
+      .particle-2 { animation: particleRise 5.2s ease-in-out infinite 1.2s; }
+      .particle-3 { animation: particleRise 4.8s ease-in-out infinite 2.5s; }
+      .particle-4 { animation: particleRise 6s ease-in-out infinite 0.8s; }
+      .particle-5 { animation: particleRise 5s ease-in-out infinite 3.1s; }
+      .pulse-neon { animation: neonPulse 3.5s ease-in-out infinite; }
+    </style>
+
+    <!-- Gradients -->
+    <linearGradient id="deepWaveRev" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#022c22" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#064e3b" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#022c22" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="midWaveRev" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#4338ca" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.6" />
+    </linearGradient>
+
+    <linearGradient id="foreWaveRev" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#047857" stop-opacity="0.5" />
+      <stop offset="50%" stop-color="#0284c7" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#047857" stop-opacity="0.5" />
+    </linearGradient>
+
+    <linearGradient id="crestStrokeRev" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="40%" stop-color="#38bdf8" />
+      <stop offset="80%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+  </defs>
+
+  <!-- ==================== LAYER 1: DEEP FLUID WAVE (Slow) ==================== -->
+  <g class="wave-rev-slow">
+    <path d="M 0 55 Q 150 25, 300 55 T 600 55 T 900 55 T 1200 55 T 1500 55 T 1800 55 T 2100 55 T 2400 55 L 2400 0 L 0 0 Z" 
+          fill="url(#deepWaveRev)" />
+  </g>
+
+  <!-- ==================== LAYER 2: MID FLUID WAVE (Medium) ==================== -->
+  <g class="wave-rev-mid">
+    <path d="M 0 45 Q 150 70, 300 45 T 600 45 T 900 45 T 1200 45 T 1500 45 T 1800 45 T 2100 45 T 2400 45 L 2400 0 L 0 0 Z" 
+          fill="url(#midWaveRev)" />
+  </g>
+
+  <!-- ==================== LAYER 3: FORE FLUID WAVE (Fast) ==================== -->
+  <g class="wave-rev-fast">
+    <path d="M 0 35 Q 150 15, 300 35 T 600 35 T 900 35 T 1200 35 T 1500 35 T 1800 35 T 2100 35 T 2400 35 L 2400 0 L 0 0 Z" 
+          fill="url(#foreWaveRev)" />
+    <!-- Dynamic Glowing Crest Line -->
+    <path d="M 0 35 Q 150 15, 300 35 T 600 35 T 900 35 T 1200 35 T 1500 35 T 1800 35 T 2100 35 T 2400 35" 
+          fill="none" stroke="url(#crestStrokeRev)" stroke-width="2.5" class="pulse-neon" />
+  </g>
+
+  <!-- ==================== BIOLUMINESCENT FLUID PARTICLES ==================== -->
+  <g>
+    <circle cx="150" cy="50" r="3" fill="#34d399" class="particle-1" />
+    <circle cx="380" cy="65" r="4" fill="#38bdf8" class="particle-2" />
+    <circle cx="620" cy="45" r="3" fill="#a855f7" class="particle-3" />
+    <circle cx="890" cy="60" r="3.5" fill="#34d399" class="particle-4" />
+    <circle cx="1080" cy="55" r="4" fill="#38bdf8" class="particle-5" />
+  </g>
+
+  <!-- ==================== FOOTER SIGNATURE & WATERMARK ==================== -->
+  <g transform="translate(600, 105)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#cbd5e1" text-anchor="middle" letter-spacing="1">
+      UNIVERSAL MEDIA &amp; FILE DOWNLOADER
+    </text>
+    <text x="0" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#64748b" text-anchor="middle">
+      Reverse Engineered from Soul Browser via REA · Pure Manifest V3 Client-Side Technology
+    </text>
+  </g>
+</svg>
