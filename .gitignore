@@ -1,0 +1,9 @@
+# Dependencies and build outputs
+node_modules/
+*.log
+.DS_Store
+
+# Reverse engineering tooling & local APK binaries
+*.apk
+*.xapk
+rea/
