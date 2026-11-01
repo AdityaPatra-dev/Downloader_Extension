@@ -1,146 +1,233 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="100%" height="100%">
   <defs>
-    <!-- Background Gradients -->
+    <style>
+      @keyframes borderFlow {
+        0% { stroke-dashoffset: 3280; }
+        100% { stroke-dashoffset: 0; }
+      }
+      @keyframes floatSlow {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(1deg); }
+      }
+      @keyframes floatOpposite {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(8px) rotate(-1deg); }
+      }
+      @keyframes pulseGlow {
+        0%, 100% { opacity: 0.16; filter: drop-shadow(0 0 15px rgba(99,102,241,0.6)); }
+        50% { opacity: 0.28; filter: drop-shadow(0 0 25px rgba(217,70,239,0.9)); }
+      }
+      @keyframes spin3D {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .animated-border {
+        stroke-dasharray: 260 560;
+        animation: borderFlow 10s linear infinite;
+      }
+      .floating-card-1 {
+        animation: floatSlow 6s ease-in-out infinite;
+      }
+      .floating-card-2 {
+        animation: floatOpposite 5s ease-in-out infinite;
+      }
+      .pulsing-aura {
+        animation: pulseGlow 4s ease-in-out infinite;
+      }
+      .rotating-ring {
+        transform-origin: 1040px 140px;
+        animation: spin3D 20s linear infinite;
+      }
+    </style>
+
+    <!-- Gradients -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b0f19" />
-      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="0%" stop-color="#080c14" />
+      <stop offset="45%" stop-color="#0f172a" />
       <stop offset="100%" stop-color="#020617" />
     </linearGradient>
 
-    <!-- Glowing Accent Gradients -->
-    <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="50%" stop-color="#8b5cf6" />
-      <stop offset="100%" stop-color="#d946ef" />
-    </linearGradient>
-
-    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#06b6d4" />
+      <stop offset="35%" stop-color="#6366f1" />
+      <stop offset="70%" stop-color="#d946ef" />
+      <stop offset="100%" stop-color="#10b981" />
     </linearGradient>
 
-    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="40%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#ec4899" />
     </linearGradient>
 
-    <!-- Filters for Glow & 3D Shadow -->
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="16" result="blur" />
+    <linearGradient id="isometricCubeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="isometricCubeLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#312e81" />
+    </linearGradient>
+    <linearGradient id="isometricCubeRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4338ca" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+
+    <linearGradient id="glassCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+
+    <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
 
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.75" />
     </filter>
   </defs>
 
   <!-- Background Base -->
-  <rect width="1200" height="420" rx="16" fill="url(#bgGrad)" />
+  <rect width="1200" height="440" rx="20" fill="url(#bgGrad)" />
 
-  <!-- Animated Grid / Tech Pattern Background -->
-  <g opacity="0.08" stroke="#ffffff" stroke-width="1">
-    <path d="M0,70 H1200 M0,140 H1200 M0,210 H1200 M0,280 H1200 M0,350 H1200" />
-    <path d="M120,0 V420 M240,0 V420 M360,0 V420 M480,0 V420 M600,0 V420 M720,0 V420 M840,0 V420 M960,0 V420 M1080,0 V420" />
+  <!-- Animated Ambient Tech Grid -->
+  <g opacity="0.06" stroke="#ffffff" stroke-width="1">
+    <path d="M0,80 H1200 M0,160 H1200 M0,240 H1200 M0,320 H1200 M0,400 H1200" />
+    <path d="M100,0 V440 M200,0 V440 M300,0 V440 M400,0 V440 M500,0 V440 M600,0 V440 M700,0 V440 M800,0 V440 M900,0 V440 M1000,0 V440 M1100,0 V440" />
   </g>
 
-  <!-- Background Radial Glows -->
-  <circle cx="200" cy="120" r="180" fill="#6366f1" opacity="0.18" filter="url(#glow)" />
-  <circle cx="1020" cy="280" r="220" fill="#d946ef" opacity="0.14" filter="url(#glow)" />
-  <circle cx="850" cy="100" r="150" fill="#06b6d4" opacity="0.15" filter="url(#glow)" />
+  <!-- Pulsing Auras -->
+  <circle cx="220" cy="140" r="190" fill="#6366f1" class="pulsing-aura" filter="url(#bloom)" />
+  <circle cx="1000" cy="300" r="210" fill="#d946ef" class="pulsing-aura" filter="url(#bloom)" />
+  <circle cx="820" cy="110" r="160" fill="#06b6d4" class="pulsing-aura" filter="url(#bloom)" />
+
+  <!-- 2D DYNAMIC BORDER ANIMATION (Traces entire banner perimeter continuously) -->
+  <rect x="2" y="2" width="1196" height="436" rx="18" fill="none" stroke="#1e293b" stroke-width="2" />
+  <rect x="2" y="2" width="1196" height="436" rx="18" fill="none" stroke="url(#beamGrad)" stroke-width="3" stroke-linecap="round" class="animated-border" filter="url(#bloom)" />
 
   <!-- LEFT HERO SECTION -->
-  <g transform="translate(80, 80)">
-    <!-- REA Extraction Badge -->
+  <g transform="translate(80, 85)">
+    <!-- REA Extraction Pill -->
     <g transform="translate(0, 0)">
-      <rect width="320" height="32" rx="16" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" />
-      <circle cx="16" cy="16" r="6" fill="#10b981" />
-      <text x="32" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#c7d2fe" letter-spacing="0.5">
+      <rect width="330" height="34" rx="17" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" />
+      <circle cx="17" cy="17" r="6" fill="#10b981" />
+      <circle cx="17" cy="17" r="10" fill="#10b981" opacity="0.25" />
+      <text x="36" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#c7d2fe" letter-spacing="0.5">
         REVERSE ENGINEERED WITH REA
       </text>
     </g>
 
     <!-- Main Title -->
-    <text x="0" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">
+    <text x="0" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="46" font-weight="800" fill="#f8fafc" letter-spacing="-1">
       UNIVERSAL MEDIA
     </text>
-    <text x="0" y="135" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="url(#purpleGlow)" letter-spacing="-1">
-      DOWNLOADER
+    <text x="0" y="145" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="46" font-weight="800" fill="url(#textGrad)" letter-spacing="-1">
+      DOWNLOADER 2.0
     </text>
 
     <!-- Subtitle -->
-    <text x="0" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="400" fill="#94a3b8">
-      Soul Browser's proprietary media sniffing &amp; HLS CMAF dual-track muxer,
+    <text x="0" y="185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="400" fill="#94a3b8">
+      Soul Browser's proprietary multi-track sniffing &amp; CMAF reassembly,
     </text>
-    <text x="0" y="200" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="400" fill="#94a3b8">
-      extracted into a high-speed Manifest V3 PC Browser Extension.
+    <text x="0" y="210" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="400" fill="#94a3b8">
+      extracted into an ultra-fast Manifest V3 PC Browser Extension.
     </text>
 
-    <!-- Feature Pills -->
-    <g transform="translate(0, 235)">
+    <!-- Interactive Badges Row -->
+    <g transform="translate(0, 245)">
       <!-- Pill 1: HLS fMP4 -->
-      <rect x="0" y="0" width="130" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#38bdf8">⚡ HLS / fMP4</text>
-
-      <!-- Pill 2: 4K/1080p Mux -->
-      <rect x="142" y="0" width="165" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <text x="156" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#a855f7">🎬 Dual-Track Mux</text>
-
-      <!-- Pill 3: Anti-CORS -->
-      <rect x="319" y="0" width="150" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <text x="333" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#10b981">🛡️ Anti-403 Bypass</text>
+      <g>
+        <rect x="0" y="0" width="136" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#38bdf8">⚡ HLS / fMP4</text>
+      </g>
+      <!-- Pill 2: Dual Mux -->
+      <g transform="translate(148, 0)">
+        <rect x="0" y="0" width="170" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#c084fc">🎬 Dual-Track Mux</text>
+      </g>
+      <!-- Pill 3: Anti-403 -->
+      <g transform="translate(330, 0)">
+        <rect x="0" y="0" width="146" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#34d399">🛡️ Anti-403 Bypass</text>
+      </g>
     </g>
   </g>
 
-  <!-- RIGHT 3D ISOMETRIC CARDS SECTION -->
-  <g transform="translate(740, 60)">
-    <!-- Glow Backdrop for Cards -->
-    <rect x="40" y="30" width="340" height="240" rx="16" fill="url(#purpleGlow)" opacity="0.12" filter="url(#glow)" />
+  <!-- RIGHT 3D ISOMETRIC DISPLAY & DYNAMIC OBJECTS -->
+  <g transform="translate(730, 40)">
+    <!-- Rotating Holographic Ring Background -->
+    <g class="rotating-ring" opacity="0.45">
+      <ellipse cx="1040" cy="140" rx="90" ry="34" fill="none" stroke="url(#beamGrad)" stroke-width="2" stroke-dasharray="14 10" />
+      <circle cx="1130" cy="140" r="4" fill="#38bdf8" />
+      <circle cx="950" cy="140" r="4" fill="#ec4899" />
+    </g>
 
-    <!-- Card 1: 3D Floating Video Preview Card (Soul Browser Style) -->
-    <g transform="translate(20, 20)" filter="url(#softShadow)">
-      <rect width="360" height="260" rx="14" fill="url(#cardGrad)" stroke="#475569" stroke-width="1.2" />
+    <!-- 3D FLOATING VIDEO PREVIEW PLAYER (Floating Animation 1) -->
+    <g class="floating-card-1" filter="url(#cardShadow)">
+      <g transform="translate(20, 20)">
+        <rect width="380" height="270" rx="16" fill="url(#glassCard)" stroke="#475569" stroke-width="1.2" />
 
-      <!-- Card Top Bar -->
-      <rect width="360" height="42" rx="14" fill="#0f172a" />
-      <circle cx="22" cy="21" r="5" fill="#ef4444" />
-      <circle cx="38" cy="21" r="5" fill="#f59e0b" />
-      <circle cx="54" cy="21" r="5" fill="#10b981" />
-      <text x="75" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">Renegade Immortal Ep 165</text>
+        <!-- Card Header Bar -->
+        <rect width="380" height="42" rx="16" fill="#0f172a" />
+        <circle cx="24" cy="21" r="5" fill="#ef4444" />
+        <circle cx="40" cy="21" r="5" fill="#f59e0b" />
+        <circle cx="56" cy="21" r="5" fill="#10b981" />
+        <text x="78" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">Renegade Immortal Ep 165</text>
+        <rect x="290" y="11" width="74" height="20" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="300" y="25" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">1080p FHD</text>
 
-      <!-- Video Player Viewport -->
-      <g transform="translate(18, 56)">
-        <rect width="324" height="130" rx="8" fill="#000000" stroke="#334155" stroke-width="1" />
-        <!-- Big Play Button Center -->
-        <circle cx="162" cy="65" r="26" fill="url(#purpleGlow)" filter="url(#glow)" opacity="0.9" />
-        <polygon points="156,53 174,65 156,77" fill="#ffffff" />
-        <!-- Live Badge -->
-        <rect x="12" y="12" width="76" height="20" rx="4" fill="rgba(15,23,42,0.85)" stroke="#38bdf8" stroke-width="0.8" />
-        <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">1080p FHD</text>
-        <rect x="236" y="12" width="76" height="20" rx="4" fill="rgba(15,23,42,0.85)" stroke="#10b981" stroke-width="0.8" />
-        <text x="246" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#10b981">~404 MB</text>
-      </g>
+        <!-- Video Frame Preview Viewport -->
+        <g transform="translate(18, 56)">
+          <rect width="344" height="136" rx="10" fill="#000000" stroke="#334155" stroke-width="1" />
+          <!-- Radial Core Burst -->
+          <circle cx="172" cy="68" r="40" fill="url(#textGrad)" opacity="0.2" filter="url(#bloom)" />
+          <!-- Animated Play Button Circle -->
+          <circle cx="172" cy="68" r="26" fill="url(#textGrad)" />
+          <polygon points="166,56 184,68 166,80" fill="#ffffff" />
+          
+          <!-- Live Badges -->
+          <rect x="12" y="12" width="86" height="20" rx="4" fill="rgba(15,23,42,0.85)" stroke="#6366f1" stroke-width="0.8" />
+          <text x="18" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#818cf8">▶ HLS STREAM</text>
 
-      <!-- Card Action Footer -->
-      <g transform="translate(18, 198)">
-        <!-- Quality Selector Dropdown Replica -->
-        <rect x="0" y="0" width="170" height="36" rx="6" fill="#0f172a" stroke="#6366f1" stroke-width="1" />
-        <text x="12" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#f8fafc">1080p (H.264 Univ)</text>
-        <polygon points="154,16 162,16 158,22" fill="#94a3b8" />
+          <rect x="256" y="12" width="76" height="20" rx="4" fill="rgba(15,23,42,0.85)" stroke="#10b981" stroke-width="0.8" />
+          <text x="266" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#34d399">~404 MB</text>
+        </g>
 
-        <!-- Download Button -->
-        <rect x="182" y="0" width="142" height="36" rx="6" fill="url(#purpleGlow)" />
-        <text x="206" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Download ↓</text>
+        <!-- Card Action Footer -->
+        <g transform="translate(18, 206)">
+          <!-- Quality Dropdown Selector Simulation -->
+          <rect x="0" y="0" width="180" height="38" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1.2" />
+          <text x="12" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#f8fafc">1080p (H.264 Univ)</text>
+          <polygon points="162,17 170,17 166,24" fill="#94a3b8" />
+
+          <!-- Download Button -->
+          <rect x="194" y="0" width="150" height="38" rx="8" fill="url(#textGrad)" />
+          <text x="220" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Download ↓</text>
+        </g>
       </g>
     </g>
 
-    <!-- Card 2: Floating Badge "Soul Browser Extracted" -->
-    <g transform="translate(240, 250)" filter="url(#softShadow)">
-      <rect width="180" height="48" rx="24" fill="#020617" stroke="#38bdf8" stroke-width="1.5" />
-      <circle cx="24" cy="24" r="14" fill="#0284c7" />
-      <text x="18" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="800" fill="#ffffff">⚡</text>
-      <text x="46" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#f8fafc">SOUL BROWSER</text>
-      <text x="46" y="37" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="500" fill="#38bdf8">Algorithm Extracted</text>
+    <!-- 3D FLOATING ISOMETRIC OBJECT: REA DECOMPILER PRISM (Floating Animation 2) -->
+    <g class="floating-card-2" transform="translate(230, 275)" filter="url(#cardShadow)">
+      <!-- Isometric 3D Cube: Top, Left, Right faces -->
+      <g transform="translate(10, 0)">
+        <!-- Top Face -->
+        <polygon points="50,0 90,18 50,36 10,18" fill="url(#isometricCubeTop)" />
+        <!-- Left Face -->
+        <polygon points="10,18 50,36 50,80 10,62" fill="url(#isometricCubeLeft)" />
+        <!-- Right Face -->
+        <polygon points="50,36 90,18 90,62 50,80" fill="url(#isometricCubeRight)" />
+      </g>
+
+      <!-- Glass Capsule Info Plaque -->
+      <g transform="translate(100, 16)">
+        <rect width="190" height="52" rx="26" fill="#020617" stroke="#38bdf8" stroke-width="1.5" />
+        <circle cx="26" cy="26" r="15" fill="#0284c7" />
+        <text x="19" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="800" fill="#ffffff">⚡</text>
+        <text x="50" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#f8fafc">SOUL BROWSER</text>
+        <text x="50" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="600" fill="#38bdf8">REA Algorithm Extracted</text>
+      </g>
     </g>
   </g>
 </svg>

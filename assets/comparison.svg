@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" width="100%" height="100%">
+  <defs>
+    <style>
+      @keyframes neonTrace {
+        0% { stroke-dashoffset: 1400; }
+        100% { stroke-dashoffset: 0; }
+      }
+      .neon-border {
+        stroke-dasharray: 180 340;
+        animation: neonTrace 8s linear infinite;
+      }
+    </style>
+
+    <linearGradient id="compBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <linearGradient id="highlightPillar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+
+    <linearGradient id="neonBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <filter id="glowLight" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1100" height="520" rx="16" fill="url(#compBg)" />
+
+  <!-- Section Header -->
+  <g transform="translate(60, 40)">
+    <rect width="180" height="24" rx="12" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+    <text x="16" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#6ee7b7" letter-spacing="0.5">HEAD-TO-HEAD COMPARISON</text>
+    <text x="0" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="24" font-weight="800" fill="#f8fafc">Capability Matrix &amp; Architectural Superiority</text>
+  </g>
+
+  <!-- TABLE CONTAINER -->
+  <g transform="translate(60, 120)">
+    <!-- Table Header Row Background -->
+    <rect width="980" height="50" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" />
+
+    <!-- Column Headers -->
+    <text x="30" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#94a3b8">FEATURE / CAPABILITY</text>
+    <text x="340" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="800" fill="#38bdf8">UNIVERSAL DOWNLOADER</text>
+    <text x="580" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">SOUL BROWSER</text>
+    <text x="750" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">IDM (DESKTOP)</text>
+    <text x="890" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">VDH (EXTENSION)</text>
+
+    <!-- HIGHLIGHT PILLAR: Universal Downloader Column (Active Glowing Selection) -->
+    <rect x="320" y="5" width="230" height="375" rx="12" fill="url(#highlightPillar)" stroke="#334155" stroke-width="1" />
+    <rect x="320" y="5" width="230" height="375" rx="12" fill="none" stroke="url(#neonBeam)" stroke-width="2.5" class="neon-border" filter="url(#glowLight)" />
+
+    <!-- ROW 1: Platform -->
+    <g transform="translate(0, 60)">
+      <line x1="20" y1="46" x2="960" y2="46" stroke="#1e293b" stroke-width="1" />
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">Target Platforms</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="180" height="26" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">💻 PC Desktop (All Browsers)</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#94a3b8">📱 Android Only</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#94a3b8">Windows Only</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#94a3b8">PC Browsers</text>
+    </g>
+
+    <!-- ROW 2: HLS Dual-Track Muxing -->
+    <g transform="translate(0, 115)">
+      <line x1="20" y1="46" x2="960" y2="46" stroke="#1e293b" stroke-width="1" />
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">HLS fMP4 CMAF Dual Muxing</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="170" height="26" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">✅ Pure In-Memory JS</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">✅ Native Java</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#f59e0b">⚠️ App Install</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">❌ Paid/Companion</text>
+    </g>
+
+    <!-- ROW 3: In-Popup Live Preview -->
+    <g transform="translate(0, 170)">
+      <line x1="20" y1="46" x2="960" y2="46" stroke="#1e293b" stroke-width="1" />
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">In-Popup Live Video Preview</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="165" height="26" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">✅ Bundled HLS Engine</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">✅ ExoPlayer</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">❌ No Preview</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">❌ No Preview</text>
+    </g>
+
+    <!-- ROW 4: Quality & Audio-Only Option -->
+    <g transform="translate(0, 225)">
+      <line x1="20" y1="46" x2="960" y2="46" stroke="#1e293b" stroke-width="1" />
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">Resolution &amp; Audio Selector</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="175" height="26" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">✅ 1080p, 720p, Audio Only</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">✅ Built-in</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#f59e0b">⚠️ Generic List</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#f59e0b">⚠️ Watermark/Lock</text>
+    </g>
+
+    <!-- ROW 5: Anti-403 Hotlink Bypass -->
+    <g transform="translate(0, 280)">
+      <line x1="20" y1="46" x2="960" y2="46" stroke="#1e293b" stroke-width="1" />
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">Anti-403 Forbidden Bypass</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="185" height="26" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">✅ DeclarativeNetRequest</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">✅ Header Replay</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">✅ Cookie Catch</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">❌ Often Blocked</text>
+    </g>
+
+    <!-- ROW 6: External Dependencies -->
+    <g transform="translate(0, 335)">
+      <text x="30" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#f8fafc">External App / Native Binaries</text>
+      <!-- Universal -->
+      <rect x="340" y="10" width="165" height="26" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+      <text x="352" y="27" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">🟢 ZERO (Pure Extension)</text>
+      <!-- Soul -->
+      <text x="580" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#10b981">🟢 Standalone</text>
+      <!-- IDM -->
+      <text x="750" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">🔴 $24.95 Executable</text>
+      <!-- VDH -->
+      <text x="890" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#ef4444">🔴 Separate .deb/.exe</text>
+    </g>
+  </g>
+</svg>

@@ -1,5 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
   <defs>
+    <style>
+      @keyframes borderFlow {
+        0% { stroke-dashoffset: 2400; }
+        100% { stroke-dashoffset: 0; }
+      }
+      @keyframes floatSlow {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+      }
+      @keyframes pipeFlow {
+        0% { stroke-dashoffset: 60; }
+        100% { stroke-dashoffset: 0; }
+      }
+      .anim-border {
+        stroke-dasharray: 220 500;
+        animation: borderFlow 10s linear infinite;
+      }
+      .floating-3d {
+        animation: floatSlow 4s ease-in-out infinite;
+      }
+      .flow-pipe {
+        stroke-dasharray: 8 6;
+        animation: pipeFlow 1.8s linear infinite;
+      }
+    </style>
+
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080c14" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <linearGradient id="neonBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="30%" stop-color="#6366f1" />
+      <stop offset="70%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+
     <linearGradient id="boxBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1e293b" />
       <stop offset="100%" stop-color="#0f172a" />
@@ -10,137 +49,206 @@
       <stop offset="100%" stop-color="#a855f7" />
     </linearGradient>
 
-    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10b981" />
-      <stop offset="100%" stop-color="#059669" />
+    <!-- 3D Isometric Cube Gradients -->
+    <linearGradient id="isoTop1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="isoLeft1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6d28d9" />
+      <stop offset="100%" stop-color="#4c1d95" />
+    </linearGradient>
+    <linearGradient id="isoRight1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#5b21b6" />
     </linearGradient>
 
-    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="isoTop2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="isoLeft2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <linearGradient id="isoRight2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+
+    <linearGradient id="isoTop3" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8" />
       <stop offset="100%" stop-color="#0284c7" />
     </linearGradient>
+    <linearGradient id="isoLeft3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#075985" />
+    </linearGradient>
+    <linearGradient id="isoRight3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
 
     <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
     </filter>
   </defs>
 
   <!-- Background Base -->
-  <rect width="1000" height="480" rx="14" fill="#0b0f19" />
+  <rect width="1000" height="500" rx="16" fill="url(#bgGrad)" />
 
-  <!-- Title -->
-  <text x="50" y="45" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">
-    ARCHITECTURE: REA EXTRACTION &amp; IN-BROWSER DUAL-TRACK MUXER
-  </text>
-  <text x="50" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">
-    Zero-native dependencies. Pure client-side Manifest V3 execution.
-  </text>
+  <!-- Outer 2D Dynamic Animated Glowing Border -->
+  <rect x="2" y="2" width="996" height="496" rx="15" fill="none" stroke="url(#neonBeam)" stroke-width="2.5" class="anim-border" />
+
+  <!-- Title Section -->
+  <g transform="translate(50, 42)">
+    <rect width="210" height="22" rx="11" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+    <text x="12" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#a5b4fc" letter-spacing="0.5">TECHNICAL ARCHITECTURE</text>
+    <text x="0" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">
+      REA Bytecode Extraction &amp; Pure-JS Dual-Track Muxer
+    </text>
+    <text x="0" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">
+      Zero native binaries or companion apps. 100% client-side Manifest V3 execution.
+    </text>
+  </g>
+
+  <!-- DYNAMIC CONNECTING PIPES -->
+  <g transform="translate(0, 0)">
+    <!-- Column 1 -> Column 2 Pipe -->
+    <line x1="310" y1="280" x2="370" y2="280" stroke="#1e293b" stroke-width="4" />
+    <line x1="310" y1="280" x2="370" y2="280" stroke="#8b5cf6" stroke-width="2.5" class="flow-pipe" />
+
+    <!-- Column 2 -> Column 3 Pipe -->
+    <line x1="630" y1="280" x2="690" y2="280" stroke="#1e293b" stroke-width="4" />
+    <line x1="630" y1="280" x2="690" y2="280" stroke="#10b981" stroke-width="2.5" class="flow-pipe" />
+  </g>
 
   <!-- COLUMN 1: Soul Browser REA Source -->
-  <g transform="translate(50, 100)" filter="url(#cardShadow)">
-    <rect width="260" height="340" rx="10" fill="url(#boxBg)" stroke="#334155" stroke-width="1.2"/>
+  <g transform="translate(50, 115)" filter="url(#cardShadow)">
+    <rect width="260" height="355" rx="10" fill="url(#boxBg)" stroke="#4338ca" stroke-width="1.2"/>
     <rect width="260" height="36" rx="10" fill="#1e1b4b"/>
-    <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#a5b4fc">1. REA REVERSE ENGINEERING</text>
+    <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#a5b4fc">1. SOUL BROWSER REA SOURCE</text>
     
+    <!-- 3D Isometric Mini Prism 1 -->
+    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
+      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop1)" />
+      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft1)" />
+      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight1)" />
+    </g>
+
     <!-- Item A -->
-    <g transform="translate(16, 50)">
-      <rect width="228" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <g transform="translate(14, 48)">
+      <rect width="232" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
       <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">DownSniff.java</text>
       <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Master playlist &amp; MIME filter</text>
     </g>
 
     <!-- Item B -->
-    <g transform="translate(16, 116)">
-      <rect width="228" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <g transform="translate(14, 112)">
+      <rect width="232" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
       <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#a855f7">DownParseM3u8.java</text>
       <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">CMAF #EXT-X-MAP init resolution</text>
     </g>
 
     <!-- Item C -->
-    <g transform="translate(16, 182)">
-      <rect width="228" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <g transform="translate(14, 176)">
+      <rect width="232" height="54" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
       <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#10b981">DownSaveSplit.java</text>
       <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">moof + mdat track interleaving</text>
     </g>
 
     <!-- Item D -->
-    <g transform="translate(16, 248)">
-      <rect width="228" height="60" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <g transform="translate(14, 240)">
+      <rect width="232" height="60" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
       <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">DialogVideoList.java</text>
       <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">In-popup preview &amp; quality picker</text>
     </g>
+    
+    <text x="14" y="328" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#64748b">APK decompiled via REA framework</text>
   </g>
 
-  <!-- Arrow 1 -> 2 -->
-  <path d="M320,270 L360,270" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="4,4"/>
-
   <!-- COLUMN 2: 3-Tier Sniffer & Service Worker -->
-  <g transform="translate(370, 100)" filter="url(#cardShadow)">
-    <rect width="260" height="340" rx="10" fill="url(#boxBg)" stroke="#334155" stroke-width="1.2"/>
+  <g transform="translate(370, 115)" filter="url(#cardShadow)">
+    <rect width="260" height="355" rx="10" fill="url(#boxBg)" stroke="#059669" stroke-width="1.2"/>
     <rect width="260" height="36" rx="10" fill="#064e3b"/>
-    <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#6ee7b7">2. 3-TIER MV3 SNIFFER</text>
+    <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#6ee7b7">2. 3-TIER MV3 SNIFFER</text>
+
+    <!-- 3D Isometric Mini Prism 2 -->
+    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
+      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop2)" />
+      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft2)" />
+      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight2)" />
+    </g>
 
     <!-- Tier 1 -->
-    <g transform="translate(16, 50)">
-      <rect width="228" height="74" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Tier 1: webRequest Interceptor</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Sniffs Content-Type, Content-Disp,</text>
-      <text x="12" y="56" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">and captures Referer + Origin headers</text>
+    <g transform="translate(14, 48)">
+      <rect width="232" height="72" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Tier 1: webRequest Interceptor</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Sniffs Content-Type, Content-Disp,</text>
+      <text x="12" y="54" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">captures Referer + Origin headers</text>
     </g>
 
     <!-- Tier 2 -->
-    <g transform="translate(16, 136)">
-      <rect width="228" height="74" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#a855f7">Tier 2: DOM Scanner &amp; iframes</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Inspects &lt;video&gt;, &lt;audio&gt;, srcset,</text>
-      <text x="12" y="56" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">extracts dimensions, durations &amp; poster</text>
+    <g transform="translate(14, 130)">
+      <rect width="232" height="72" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#a855f7">Tier 2: DOM Scanner &amp; iframes</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Inspects &lt;video&gt;, &lt;audio&gt;, srcset,</text>
+      <text x="12" y="54" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">extracts dimensions, durations &amp; poster</text>
     </g>
 
     <!-- Tier 3 -->
-    <g transform="translate(16, 222)">
-      <rect width="228" height="86" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#10b981">Tier 3: DeclarativeNetRequest</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Dynamic rule 9998: sets Referer,</text>
-      <text x="12" y="56" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">cleans Origin, and enforces</text>
-      <text x="12" y="72" font-family="monospace" font-size="10" fill="#38bdf8">Access-Control-Allow-Origin: *</text>
+    <g transform="translate(14, 212)">
+      <rect width="232" height="84" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#10b981">Tier 3: DeclarativeNetRequest</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Dynamic rule 9998: injects Referer,</text>
+      <text x="12" y="54" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">cleans Origin, enforces CORS:</text>
+      <text x="12" y="70" font-family="monospace" font-size="9" fill="#38bdf8">Access-Control-Allow-Origin: *</text>
     </g>
+
+    <text x="14" y="328" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#64748b">Session replay bypassing 403 blocks</text>
   </g>
 
-  <!-- Arrow 2 -> 3 -->
-  <path d="M640,270 L680,270" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4,4"/>
-
   <!-- COLUMN 3: In-Memory Dual-Track Muxer -->
-  <g transform="translate(690, 100)" filter="url(#cardShadow)">
-    <rect width="260" height="340" rx="10" fill="url(#boxBg)" stroke="#334155" stroke-width="1.2"/>
+  <g transform="translate(690, 115)" filter="url(#cardShadow)">
+    <rect width="260" height="355" rx="10" fill="url(#boxBg)" stroke="#0284c7" stroke-width="1.2"/>
     <rect width="260" height="36" rx="10" fill="#0c4a6e"/>
-    <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#7dd3fc">3. PURE JS DUAL-TRACK MUXER</text>
+    <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#7dd3fc">3. PURE JS DUAL-TRACK MUXER</text>
+
+    <!-- 3D Isometric Mini Prism 3 -->
+    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
+      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop3)" />
+      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft3)" />
+      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight3)" />
+    </g>
 
     <!-- Step A -->
-    <g transform="translate(16, 50)">
-      <rect width="228" height="60" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">mergeFmp4Init()</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Inserts audio trak + trex into video moov</text>
+    <g transform="translate(14, 48)">
+      <rect width="232" height="56" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">mergeFmp4Init()</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Inserts audio trak + trex into video moov</text>
     </g>
 
     <!-- Step B -->
-    <g transform="translate(16, 122)">
-      <rect width="228" height="60" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#a855f7">updateAudioTrackId()</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Sets audio tfhd track_id to 2</text>
+    <g transform="translate(14, 112)">
+      <rect width="232" height="56" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="monospace" font-size="11" font-weight="700" fill="#a855f7">updateAudioTrackId()</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">Sets audio tfhd track_id to 2</text>
     </g>
 
     <!-- Step C -->
-    <g transform="translate(16, 194)">
-      <rect width="228" height="60" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-      <text x="12" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#10b981">Concurrent Interleaver</text>
-      <text x="12" y="40" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">[vInit+aInit, v0, a0, v1, a1, ...]</text>
+    <g transform="translate(14, 176)">
+      <rect width="232" height="56" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" font-family="monospace" font-size="11" font-weight="700" fill="#10b981">Concurrent Interleaver</text>
+      <text x="12" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#94a3b8">[vInit+aInit, v0, a0, v1, a1, ...]</text>
     </g>
 
     <!-- Step D: Output -->
-    <g transform="translate(16, 266)">
-      <rect width="228" height="52" rx="6" fill="url(#purpleGrad)"/>
-      <text x="16" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Playable Universal .mp4</text>
-      <text x="16" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#f1f5f9">Video (H.264/AV1) + Audio (AAC 128k)</text>
+    <g transform="translate(14, 240)">
+      <rect width="232" height="60" rx="6" fill="url(#purpleGrad)"/>
+      <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Playable Universal .mp4</text>
+      <text x="14" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#f1f5f9">Video (H.264/AV1) + Audio (AAC 128k)</text>
     </g>
+
+    <text x="14" y="328" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#64748b">Instant Blob export, zero re-encoding</text>
   </g>
 </svg>

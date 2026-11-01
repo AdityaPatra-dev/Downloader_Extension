@@ -34,6 +34,13 @@ By reverse engineering Soul Browser's APK using **REA (Reverse Engineer Anything
 
 ## 🌟 Key Features
 
+<p align="center">
+  <img src="assets/features.svg" alt="Key Features Grid" width="100%">
+</p>
+
+<details>
+<summary><b>📋 View Full Feature Breakdown in Text</b></summary>
+
 | Feature | Description |
 | :--- | :--- |
 | 🎬 **Dual-Track Stream Muxer** | Detects HLS (`.m3u8`) and DASH streams. Downloads separate video fragments and audio playlists (`aac_*`), merges them in-memory via ISO-BMFF box manipulation (`moof`, `mdat`, `tfhd`), and exports a synchronized `.mp4`. |
@@ -44,6 +51,8 @@ By reverse engineering Soul Browser's APK using **REA (Reverse Engineer Anything
 | 🛡️ **Anti-403 & CORS Bypass** | Uses Chrome's `declarativeNetRequestWithHostAccess` API to inject legitimate `Referer`, strip `Origin`, and enforce `Access-Control-Allow-Origin: *`. |
 | 🖼️ **Deep Gallery & Image Sniffer**| Extracts full-resolution images from `<img>`, `<picture>`, responsive `srcset`, and CSS background styles while filtering out 1px tracking beacons. |
 | 📁 **Multi-Category Batch Downloader** | Categorized tabs for **Video**, **Audio**, **Images**, **Docs**, and **Archives** with multi-selection and batch downloading. |
+
+</details>
 
 ---
 
@@ -89,6 +98,10 @@ In modern adaptive streaming (CMAF / fragmented MP4), video and audio tracks are
 * Video: `#EXT-X-MAP:URI="init.mp4"` followed by `0.m4s, 1.m4s, ...`
 * Audio: `#EXT-X-MEDIA:TYPE=AUDIO,URI=".../aac_q2_0/3/manifest.m3u8"`
 
+<p align="center">
+  <img src="assets/muxer_flow.svg" alt="Dual-Track Muxer Flow Diagram" width="100%">
+</p>
+
 Our extension implements Soul Browser's in-memory box manipulation in [`offscreen/hls_stream_muxer.js`](file:///home/adityapatra/Documents/GitHub/Downloader_Extension/offscreen/hls_stream_muxer.js):
 ```javascript
 // 1. Extract audio trak and trex from audio init.mp4
@@ -129,13 +142,9 @@ Using `declarativeNetRequestWithHostAccess`, the extension adds dynamic rule `99
 
 ### Step-by-Step Setup Guide
 
-```
-  Step 1: Clone/Download       Step 2: Enable Dev Mode        Step 3: Load Unpacked
- ┌──────────────────────┐     ┌───────────────────────┐     ┌───────────────────────┐
- │ git clone <repo_url> │ ──> │ chrome://extensions   │ ──> │ Select "dist" folder  │
- │                      │     │ [x] Developer Mode    │     │ or project root       │
- └──────────────────────┘     └───────────────────────┘     └───────────────────────┘
-```
+<p align="center">
+  <img src="assets/installation.svg" alt="Instant Setup Pipeline" width="100%">
+</p>
 
 #### 1. Download or Clone the Repository
 ```bash
@@ -177,6 +186,13 @@ Click the puzzle piece icon (Extensions) in your browser toolbar and click the *
 
 ## 📊 Comparison Matrix
 
+<p align="center">
+  <img src="assets/comparison.svg" alt="Head-to-Head Capability Matrix" width="100%">
+</p>
+
+<details>
+<summary><b>📋 View Comparison Table in Text</b></summary>
+
 | Capability | **Universal Downloader (Our Extension)** | **Soul Browser (Android)** | **Internet Download Manager (IDM)** | **Video DownloadHelper** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Platform** | 💻 Desktop PC (All Browsers) | 📱 Android Only | 💻 Windows Only (Paid) | 💻 PC Extension |
@@ -185,6 +201,8 @@ Click the puzzle piece icon (Extensions) in your browser toolbar and click the *
 | **Quality Selector (1080p/720p/Audio)**| ✅ Auto Master Probe | ✅ Built-in | ⚠️ Complex Dialog | ⚠️ Limited in Free Version |
 | **Anti-403 Hotlink Bypass** | ✅ DeclarativeNetRequest | ✅ WebResourceResponse | ✅ Replays Headers | ⚠️ Hit-or-Miss |
 | **External Dependencies** | 🟢 **Zero (Pure Extension)** | 🟢 Standalone App | 🔴 Paid External Binary | 🔴 External Companion App |
+
+</details>
 
 ---
 
