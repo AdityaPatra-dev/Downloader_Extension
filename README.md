@@ -15,10 +15,6 @@
   <b>The powerful media sniffing, universal extraction, and dual-track stream reassembly engine of Android's famous Soul Browser — reverse engineered with REA and brought to all desktop PC browsers.</b>
 </p>
 
-<p align="center">
-  <img src="assets/fluid_header.svg" alt="Dynamic Fluid Wave Flow" width="100%">
-</p>
-
 ---
 
 ## ⚡ Overview
@@ -256,5 +252,5 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 * Reverse engineered with **[REA (Reverse Engineer Anything)](https://github.com)**.
 
 <p align="center">
-  <img src="assets/fluid_footer.svg" alt="Dynamic Fluid Wave Footer" width="100%">
+  <img src="assets/fluid_header.svg" alt="Dynamic Fluid Wave Animation" width="100%">
 </p>
