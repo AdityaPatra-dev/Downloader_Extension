@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Universal Downloader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <header class="header">
+      <div class="brand">
+        <img src="../icons/icon32.png" alt="Logo" class="logo">
+        <h1 class="title">Universal Downloader</h1>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" class="icon-btn" title="Refresh detection">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search Input -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Filter by name, extension, or URL...">
+    </div>
+
+    <!-- Category Tabs -->
+    <nav class="tabs" id="categoryTabs">
+      <button type="button" class="tab-btn active" data-category="all">
+        All <span class="badge" id="count-all">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-category="video">
+        Video <span class="badge" id="count-video">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-category="audio">
+        Audio <span class="badge" id="count-audio">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-category="image">
+        Images <span class="badge" id="count-image">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-category="document">
+        Docs <span class="badge" id="count-document">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-category="archive">
+        Archives <span class="badge" id="count-archive">0</span>
+      </button>
+    </nav>
+
+    <!-- Media List Container -->
+    <main class="media-container" id="mediaContainer">
+      <div class="cards-list" id="cardsList"></div>
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">🔍</div>
+        <p id="emptyTitle">No items detected.</p>
+        <small id="emptySubtext">Play a video, scroll the page, or click refresh to trigger deep detection.</small>
+      </div>
+    </main>
+
+    <!-- Batch Action Footer -->
+    <footer class="footer-bar" id="footerBar">
+      <div class="selection-info">
+        <input type="checkbox" id="selectAllCheckbox">
+        <label for="selectAllCheckbox">Select All (<span id="selectedCount">0</span>)</label>
+      </div>
+      <div class="footer-buttons">
+        <button type="button" id="downloadSelectedBtn" class="btn btn-primary" disabled>Download Selected</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- In-Popup Preview Player Modal (Soul Browser Style) -->
+  <div id="playerModal" class="player-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-indicator">▶ PREVIEW</span>
+          <h2 id="modalTitle" class="modal-title">Stream Preview</h2>
+        </div>
+        <button type="button" id="modalCloseBtn" class="modal-close" title="Close Preview">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="player-frame">
+          <video id="modalVideo" controls autoplay playsinline></video>
+          <div id="playerStatus" class="player-status" style="display: none;"></div>
+          <button type="button" id="unmuteBtn" class="unmute-badge" style="display: none;">🔇 Muted (Click to Unmute)</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-info" id="modalInfo">HLS Stream</div>
+        <button type="button" id="modalDownloadBtn" class="btn btn-primary">Download Stream</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/hls.min.js"></script>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
