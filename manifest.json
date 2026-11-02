@@ -51,6 +51,12 @@
       ],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "universal-media-downloader@soulbrowser.engine",
+      "strict_min_version": "109.0"
+    }
+  }
 }
 
