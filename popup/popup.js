@@ -218,12 +218,13 @@ async function openPreview(item) {
   };
 
   // Determine effective stream source:
-  // If master playlist exists, Hls.js can natively handle audio/video tracks.
-  // Only synthesize combined blob if explicitly dual-track and separate without master playlist.
+  // If master playlist exists, Hls.js MUST load master playlist to retain audio track syncing.
+  // Quality resolution switching is then handled via Hls.js level selection without losing audio.
   let effectiveSourceUrl = chosenVideoUrl;
-  if (item.masterUrl && !item.selectedVariantUrl) {
-    effectiveSourceUrl = item.masterUrl;
-  } else if (item.category === 'video' && chosenAudioUrl && chosenAudioUrl !== chosenVideoUrl && item.isDualTrack && !chosenVideoUrl.includes('master')) {
+  const masterPlaylistUrl = item.masterUrl || (item.isMaster ? item.url : null);
+  if (masterPlaylistUrl) {
+    effectiveSourceUrl = masterPlaylistUrl;
+  } else if (chosenAudioUrl && chosenAudioUrl !== chosenVideoUrl && !chosenVideoUrl.includes('master')) {
     activeMasterBlobUrl = createCombinedMasterBlob(chosenVideoUrl, chosenAudioUrl);
     effectiveSourceUrl = activeMasterBlobUrl;
   }
@@ -262,8 +263,24 @@ async function openPreview(item) {
     currentHlsInstance.loadSource(effectiveSourceUrl);
     currentHlsInstance.attachMedia(video);
 
-    currentHlsInstance.on(window.Hls.Events.MANIFEST_PARSED, () => {
+    currentHlsInstance.on(window.Hls.Events.MANIFEST_PARSED, (event, data) => {
       statusEl.innerText = 'Buffering stream...';
+
+      // If user selected a specific quality variant before preview, switch to that level
+      if (item.selectedVariantUrl && data.levels && data.levels.length > 0) {
+        const targetIdx = data.levels.findIndex(lvl =>
+          lvl.url === item.selectedVariantUrl ||
+          item.selectedVariantUrl.includes(lvl.url) ||
+          lvl.url.includes(item.selectedVariantUrl)
+        );
+        if (targetIdx !== -1) {
+          currentHlsInstance.currentLevel = targetIdx;
+        }
+      }
+
+      // Populate preview modal quality selector so user can switch resolution with audio
+      setupModalQualitySelect(data.levels, currentHlsInstance.currentLevel);
+
       video.play().catch(() => {});
     });
 
@@ -339,6 +356,50 @@ async function openPreview(item) {
 }
 
 /**
+ * Configure resolution selector in preview modal for live level switching.
+ */
+function setupModalQualitySelect(levels, currentLevel) {
+  const modalQualitySelect = document.getElementById('modalQualitySelect');
+  if (!modalQualitySelect) return;
+
+  if (!levels || levels.length <= 1) {
+    modalQualitySelect.style.display = 'none';
+    return;
+  }
+
+  let optionsHtml = '<option value="-1">Auto (Best)</option>';
+  levels.forEach((lvl, idx) => {
+    let label = '';
+    if (lvl.height) {
+      label = `${lvl.height}p`;
+    } else if (lvl.bitrate) {
+      label = `${Math.round(lvl.bitrate / 1000)}k`;
+    } else {
+      label = `Quality ${idx + 1}`;
+    }
+    const selected = idx === currentLevel ? 'selected' : '';
+    optionsHtml += `<option value="${idx}" ${selected}>${label}</option>`;
+  });
+
+  modalQualitySelect.innerHTML = optionsHtml;
+  modalQualitySelect.value = String(currentLevel >= 0 ? currentLevel : -1);
+  modalQualitySelect.style.display = 'inline-block';
+
+  modalQualitySelect.onchange = (e) => {
+    const lvlIdx = parseInt(e.target.value, 10);
+    if (currentHlsInstance) {
+      currentHlsInstance.currentLevel = lvlIdx;
+      if (lvlIdx >= 0 && currentHlsInstance.levels && currentHlsInstance.levels[lvlIdx]) {
+        const matchedLvl = currentHlsInstance.levels[lvlIdx];
+        if (currentPreviewItem) {
+          currentPreviewItem.selectedVariantUrl = matchedLvl.url;
+        }
+      }
+    }
+  };
+}
+
+/**
  * Close Video Preview Modal.
  */
 function closePreview() {
@@ -346,6 +407,7 @@ function closePreview() {
   const video = document.getElementById('modalVideo');
   const statusEl = document.getElementById('playerStatus');
   const unmuteBtn = document.getElementById('unmuteBtn');
+  const modalQualitySelect = document.getElementById('modalQualitySelect');
 
   if (activeMasterBlobUrl) {
     URL.revokeObjectURL(activeMasterBlobUrl);
@@ -361,8 +423,12 @@ function closePreview() {
   video.load();
   if (statusEl) statusEl.style.display = 'none';
   if (unmuteBtn) unmuteBtn.style.display = 'none';
+  if (modalQualitySelect) modalQualitySelect.style.display = 'none';
   modal.style.display = 'none';
   currentPreviewItem = null;
+
+  // Immediately remove dynamic rules so webpage normal traffic is completely clean
+  chrome.runtime.sendMessage({ type: 'CLEANUP_STREAM_HEADERS' }).catch(() => {});
 }
 
 /**
@@ -635,6 +701,20 @@ function attachCardEvents() {
         const sizePill = document.getElementById(`size-pill-${id}`);
         if (sizePill) {
           sizePill.innerText = `~${formatBytes(estSize)}`;
+        }
+      }
+
+      // If this item is currently playing in the preview modal, switch level with audio intact
+      if (currentPreviewItem && currentPreviewItem.id === id && currentHlsInstance && currentHlsInstance.levels) {
+        const targetIdx = currentHlsInstance.levels.findIndex(lvl =>
+          lvl.url === item.selectedVariantUrl ||
+          item.selectedVariantUrl.includes(lvl.url) ||
+          lvl.url.includes(item.selectedVariantUrl)
+        );
+        if (targetIdx !== -1) {
+          currentHlsInstance.currentLevel = targetIdx;
+          const modalQualitySelect = document.getElementById('modalQualitySelect');
+          if (modalQualitySelect) modalQualitySelect.value = String(targetIdx);
         }
       }
     });
@@ -913,6 +993,11 @@ chrome.runtime.onMessage.addListener((message) => {
     }
     console.error('HLS stream error:', error);
   }
+});
+
+// Clean up stream rules on popup close
+window.addEventListener('pagehide', () => {
+  chrome.runtime.sendMessage({ type: 'CLEANUP_STREAM_HEADERS' }).catch(() => {});
 });
 
 // Initial boot

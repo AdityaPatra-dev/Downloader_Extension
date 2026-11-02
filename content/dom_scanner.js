@@ -101,10 +101,27 @@ function inspectVideoElement(video) {
   const resTag = getResolutionTag(width, height);
   const durationStr = formatDuration(duration);
 
+  // If video is using MSE blob or has active dimensions/duration, enrich detected network streams
+  if (candidates.some(c => c.startsWith('blob:')) || width > 0 || duration > 0) {
+    chrome.runtime.sendMessage({
+      type: 'UPDATE_ACTIVE_VIDEO_METADATA',
+      payload: {
+        title,
+        width,
+        height,
+        duration,
+        durationFormatted: durationStr,
+        poster,
+        resolutionTag: resTag
+      }
+    }).catch(() => {});
+  }
+
   const items = [];
   for (const rawUrl of candidates) {
     const absUrl = toAbsoluteUrl(rawUrl);
-    if (!absUrl) continue;
+    // Never register unreadable cross-origin blob: or data: URLs as downloadable items
+    if (!absUrl || absUrl.startsWith('blob:') || absUrl.startsWith('data:')) continue;
 
     const isM3u8 = absUrl.includes('.m3u8');
     let cleanFilename = title || 'Video';

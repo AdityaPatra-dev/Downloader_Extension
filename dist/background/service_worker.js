@@ -188,6 +188,8 @@ function updateBadge(tabId) {
  */
 function registerMediaItem(tabId, item) {
   if (!tabId || tabId < 0 || !item || !item.url) return;
+  // Never store unreadable cross-origin blob: or data: URLs as downloadable items
+  if (item.url.startsWith('blob:') || item.url.startsWith('data:')) return;
 
   if (!tabMediaStore.has(tabId)) {
     tabMediaStore.set(tabId, new Map());
@@ -304,6 +306,8 @@ function registerMediaItem(tabId, item) {
                 estimatedSize: info.estimatedSize || current.estimatedSize || 0,
                 resolutionTag: current.resolutionTag || info.resolution || '',
                 isMaster: info.isMaster ?? current.isMaster,
+                masterUrl: info.isMaster ? item.url : (current.masterUrl || null),
+                isDualTrack: Boolean(audioUrl),
                 variants: variants || [],
                 audioUrl: audioUrl
               });
@@ -419,6 +423,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
     tabMediaStore.delete(tabId);
     updateBadge(tabId);
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
+    }).catch(() => {});
   }
 });
 
@@ -550,6 +557,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setupStreamHeaders(url, referer, origin, audioUrl)
       .then(() => sendResponse({ success: true }))
       .catch((err) => sendResponse({ success: false, error: err.message }));
+    return true;
+  }
+
+  if (type === 'CLEANUP_STREAM_HEADERS') {
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
+    }).catch(() => {});
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (type === 'UPDATE_ACTIVE_VIDEO_METADATA') {
+    if (tabId && payload) {
+      const store = tabMediaStore.get(tabId);
+      if (store) {
+        for (const v of store.values()) {
+          if (v.category === 'video') {
+            if (payload.title && (!v.title || v.title === 'Video')) v.title = payload.title;
+            if (payload.poster && !v.poster) v.poster = payload.poster;
+            if (payload.duration && !v.duration) {
+              v.duration = payload.duration;
+              v.durationFormatted = payload.durationFormatted;
+            }
+            if (payload.resolutionTag && !v.resolutionTag) {
+              v.resolutionTag = payload.resolutionTag;
+              v.width = payload.width;
+              v.height = payload.height;
+            }
+          }
+        }
+      }
+    }
+    sendResponse({ success: true });
     return true;
   }
 

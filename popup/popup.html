@@ -91,7 +91,10 @@
       </div>
       <div class="modal-footer">
         <div class="modal-info" id="modalInfo">HLS Stream</div>
-        <button type="button" id="modalDownloadBtn" class="btn btn-primary">Download Stream</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select id="modalQualitySelect" class="quality-select" style="display: none; padding: 4px 8px; font-size: 11px;"></select>
+          <button type="button" id="modalDownloadBtn" class="btn btn-primary">Download Stream</button>
+        </div>
       </div>
     </div>
   </div>
