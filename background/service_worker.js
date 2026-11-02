@@ -11,37 +11,57 @@ const variantToMasterMap = new Map();
 // Mapping of tabId -> active audio track URL
 const tabAudioMap = new Map();
 
-const STREAM_RULE_ID = 9998;
+const STREAM_RULE_ID_INITIATOR = 9998;
+const STREAM_RULE_ID_DOMAIN = 9997;
+const STREAM_RULE_ID_AUDIO = 9996;
 
 /**
  * Configure dynamic DeclarativeNetRequest rules to inject Referer and allow CORS
- * for preview playback and stream chunk fetching.
+ * for preview playback and stream chunk fetching across all CDN domains.
  */
-async function setupStreamHeaders(url, referer, origin) {
+async function setupStreamHeaders(url, referer, origin, audioUrl) {
   if (!url) return;
   try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname;
+    let effectiveReferer = referer;
+    if (!effectiveReferer) {
+      try {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tabs[0]?.url && !tabs[0].url.startsWith('chrome')) {
+          effectiveReferer = tabs[0].url;
+        }
+      } catch (_) {}
+    }
+
+    let effectiveOrigin = origin;
+    if (!effectiveOrigin && effectiveReferer) {
+      try {
+        effectiveOrigin = new URL(effectiveReferer).origin;
+      } catch (_) {}
+    }
 
     const requestHeaders = [];
-    if (referer) {
-      requestHeaders.push({ header: 'Referer', operation: 'set', value: referer });
+    if (effectiveReferer) {
+      requestHeaders.push({ header: 'Referer', operation: 'set', value: effectiveReferer });
     }
-    if (origin) {
-      requestHeaders.push({ header: 'Origin', operation: 'set', value: origin });
+    if (effectiveOrigin) {
+      requestHeaders.push({ header: 'Origin', operation: 'set', value: effectiveOrigin });
     } else {
       requestHeaders.push({ header: 'Origin', operation: 'remove' });
     }
 
     const responseHeaders = [
       { header: 'Access-Control-Allow-Origin', operation: 'set', value: '*' },
-      { header: 'Access-Control-Allow-Methods', operation: 'set', value: 'GET, HEAD, OPTIONS' }
+      { header: 'Access-Control-Allow-Methods', operation: 'set', value: 'GET, HEAD, OPTIONS, POST' },
+      { header: 'Access-Control-Allow-Headers', operation: 'set', value: '*' },
+      { header: 'Access-Control-Expose-Headers', operation: 'set', value: '*' }
     ];
 
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [STREAM_RULE_ID],
-      addRules: [{
-        id: STREAM_RULE_ID,
+    const rulesToAdd = [];
+
+    // Rule 1: Catch-all for any request initiated by the extension to ANY media CDN
+    try {
+      rulesToAdd.push({
+        id: STREAM_RULE_ID_INITIATOR,
         priority: 100,
         action: {
           type: 'modifyHeaders',
@@ -49,14 +69,81 @@ async function setupStreamHeaders(url, referer, origin) {
           responseHeaders
         },
         condition: {
-          urlFilter: `||${domain}`,
-          resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'media', 'other']
+          urlFilter: '*',
+          initiatorDomains: [chrome.runtime.id],
+          resourceTypes: ['xmlhttprequest', 'media', 'other']
         }
-      }]
+      });
+    } catch (_) {}
+
+    // Rule 2: Explicit target media domain
+    try {
+      const urlObj = new URL(url);
+      if (urlObj.hostname) {
+        rulesToAdd.push({
+          id: STREAM_RULE_ID_DOMAIN,
+          priority: 99,
+          action: {
+            type: 'modifyHeaders',
+            requestHeaders,
+            responseHeaders
+          },
+          condition: {
+            urlFilter: `||${urlObj.hostname}`,
+            resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'media', 'other']
+          }
+        });
+      }
+    } catch (_) {}
+
+    // Rule 3: Explicit audio domain if different
+    if (audioUrl) {
+      try {
+        const audioObj = new URL(audioUrl);
+        if (audioObj.hostname) {
+          rulesToAdd.push({
+            id: STREAM_RULE_ID_AUDIO,
+            priority: 98,
+            action: {
+              type: 'modifyHeaders',
+              requestHeaders,
+              responseHeaders
+            },
+            condition: {
+              urlFilter: `||${audioObj.hostname}`,
+              resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'media', 'other']
+            }
+          });
+        }
+      } catch (_) {}
+    }
+
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [STREAM_RULE_ID_INITIATOR, STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO],
+      addRules: rulesToAdd
     });
   } catch (err) {
     console.warn('Could not set stream headers rule:', err);
   }
+}
+
+/**
+ * Determine if an audio track is likely part of the same video presentation.
+ */
+function isLikelyRelatedStream(vUrl, aUrl) {
+  if (!vUrl || !aUrl) return false;
+  try {
+    const vObj = new URL(vUrl);
+    const aObj = new URL(aUrl);
+    if (vObj.hostname === aObj.hostname) return true;
+    const vDomain = vObj.hostname.split('.').slice(-2).join('.');
+    const aDomain = aObj.hostname.split('.').slice(-2).join('.');
+    if (vDomain && aDomain && vDomain === aDomain) return true;
+    if (/aac|audio|sound|track/i.test(aObj.pathname) && vObj.pathname.split('/').slice(0, 3).join('/') === aObj.pathname.split('/').slice(0, 3).join('/')) {
+      return true;
+    }
+  } catch (_) {}
+  return false;
 }
 
 /**
@@ -158,16 +245,22 @@ function registerMediaItem(tabId, item) {
     const s = tabMediaStore.get(tabId);
     if (s) {
       for (const v of s.values()) {
-        if (v.category === 'video' && !v.audioUrl) {
+        if (v.category === 'video' && !v.audioUrl && isLikelyRelatedStream(v.url, item.url)) {
           v.audioUrl = item.url;
+          v.isDualTrack = true;
         }
       }
     }
   }
 
-  // If registering a video without audioUrl, check if an audio track was already detected for this tab
-  if (item.category === 'video' && !item.audioUrl && tabAudioMap.has(tabId)) {
-    item.audioUrl = tabAudioMap.get(tabId);
+  // If registering a video without audioUrl, check if a related audio track was detected
+  let resolvedAudioUrl = item.audioUrl || masterLink?.audioUrl || null;
+  if (!resolvedAudioUrl && tabAudioMap.has(tabId)) {
+    const candidateAudio = tabAudioMap.get(tabId);
+    if (isLikelyRelatedStream(item.url, candidateAudio)) {
+      resolvedAudioUrl = candidateAudio;
+      item.isDualTrack = true;
+    }
   }
 
   // Check if this URL is already linked to a known master playlist
@@ -179,7 +272,7 @@ function registerMediaItem(tabId, item) {
     title: item.title || cleanTitle || 'Media File',
     filename: finalFilename || 'download.bin',
     masterUrl: masterLink?.masterUrl || item.masterUrl || null,
-    audioUrl: masterLink?.audioUrl || item.audioUrl || tabAudioMap.get(tabId) || null,
+    audioUrl: resolvedAudioUrl,
     variants: masterLink?.variants || item.variants || [],
     ...item
   };
@@ -463,15 +556,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (type === 'PREPARE_STREAM_HEADERS') {
-    const { url, referer, origin } = payload;
-    setupStreamHeaders(url, referer, origin)
+    const { url, referer, origin, audioUrl } = payload;
+    setupStreamHeaders(url, referer, origin, audioUrl)
       .then(() => sendResponse({ success: true }))
       .catch((err) => sendResponse({ success: false, error: err.message }));
     return true;
   }
 
   if (type === 'START_HLS_DOWNLOAD') {
-    setupStreamHeaders(payload.url, payload.referer, payload.origin)
+    setupStreamHeaders(payload.url, payload.referer, payload.origin, payload.audioUrl)
       .then(() => ensureOffscreenDocument())
       .then(() => {
         chrome.runtime.sendMessage({

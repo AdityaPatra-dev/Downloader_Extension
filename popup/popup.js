@@ -135,7 +135,8 @@ async function openPreview(item) {
       payload: {
         url: chosenVideoUrl,
         referer: item.referer,
-        origin: item.origin
+        origin: item.origin,
+        audioUrl: chosenAudioUrl
       }
     }, () => resolve());
   });
@@ -173,22 +174,79 @@ async function openPreview(item) {
     statusEl.style.display = 'none';
   };
 
+  const showStreamErrorUi = () => {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `
+      <div style="font-weight: 600; margin-bottom: 4px;">Stream connection blocked or token expired.</div>
+      <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">The host CDN requires an active session or a fresh auth token.</div>
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <button type="button" class="refresh-stream-btn" id="streamReloadBtn">
+          🔄 Reload Tab
+        </button>
+        <button type="button" class="refresh-stream-btn" id="streamDownloadDirectBtn" style="background: #10b981; border-color: #059669; color: #ffffff;">
+          ⬇ Download Media
+        </button>
+      </div>
+    `;
+    const reloadBtn = document.getElementById('streamReloadBtn');
+    if (reloadBtn) {
+      reloadBtn.onclick = () => {
+        if (activeTabId) {
+          chrome.tabs.reload(activeTabId, () => {
+            closePreview();
+            window.close();
+          });
+        }
+      };
+    }
+    const dlBtn = document.getElementById('streamDownloadDirectBtn');
+    if (dlBtn) {
+      dlBtn.onclick = () => {
+        closePreview();
+        startDownload(item);
+      };
+    }
+  };
+
+  video.onerror = () => {
+    console.warn('[Preview] Native HTML5 video error occurred on src:', video.src);
+    showStreamErrorUi();
+  };
+
   // Determine effective stream source:
-  // If separate video and audio tracks exist, combine them into an in-memory master playlist
+  // Only synthesize combined master blob if explicitly dual-track or audio is known separate
   let effectiveSourceUrl = chosenVideoUrl;
-  if (item.category === 'video' && chosenAudioUrl && !chosenVideoUrl.includes('master') && !chosenVideoUrl.includes('xbsobkq')) {
+  if (item.category === 'video' && chosenAudioUrl && item.isDualTrack && !chosenVideoUrl.includes('master') && !chosenVideoUrl.includes('xbsobkq')) {
     activeMasterBlobUrl = createCombinedMasterBlob(chosenVideoUrl, chosenAudioUrl);
     effectiveSourceUrl = activeMasterBlobUrl;
   }
 
-  let hasFallenBack = false;
+  let retryCount = 0;
+  let droppedSyntheticBlob = false;
+  let triedVariantFallback = false;
+  let triedNativeFallback = false;
 
-  if (window.Hls && window.Hls.isSupported() && (item.isStream || effectiveSourceUrl.includes('.m3u8') || effectiveSourceUrl.startsWith('blob:'))) {
+  const isHlsTarget = Boolean(window.Hls && window.Hls.isSupported() && (
+    effectiveSourceUrl.includes('.m3u8') || 
+    effectiveSourceUrl.startsWith('blob:') || 
+    item.isStream
+  ));
+
+  if (isHlsTarget) {
     currentHlsInstance = new window.Hls({
       enableWorker: true,
       lowLatencyMode: false,
       backBufferLength: 60,
       maxBufferLength: 30,
+      manifestLoadingTimeOut: 20000,
+      manifestLoadingMaxRetry: 4,
+      manifestLoadingRetryDelay: 500,
+      levelLoadingTimeOut: 20000,
+      levelLoadingMaxRetry: 4,
+      levelLoadingRetryDelay: 500,
+      fragLoadingTimeOut: 25000,
+      fragLoadingMaxRetry: 6,
+      fragLoadingRetryDelay: 500,
       xhrSetup: (xhr) => {
         xhr.withCredentials = false;
       }
@@ -206,41 +264,62 @@ async function openPreview(item) {
       console.warn('HLS preview error:', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
-          // If master URL failed, fall back to synthesized master with direct video & audio variants
-          if (!hasFallenBack && (item.masterUrl || effectiveSourceUrl.includes('xbsobkq') || effectiveSourceUrl.includes('master'))) {
-            hasFallenBack = true;
-            statusEl.innerText = 'Recovering stream with direct media fragments...';
-            const vUrl = item.selectedVariantUrl || (item.variants?.[0]?.url) || chosenVideoUrl;
-            const aUrl = item.selectedAudioUrl || item.audioUrl || (item.variants?.[0]?.audioUrl);
-            if (vUrl && aUrl && vUrl !== effectiveSourceUrl) {
-              activeMasterBlobUrl = createCombinedMasterBlob(vUrl, aUrl);
-              currentHlsInstance.loadSource(activeMasterBlobUrl);
+          // Recovery Stage 1: Auto-retry via Hls.js startLoad
+          if (retryCount < 2) {
+            retryCount++;
+            console.log(`[Preview] Network recovery attempt ${retryCount}/2...`);
+            statusEl.innerText = `Reconnecting stream (attempt ${retryCount}/2)...`;
+            setTimeout(() => {
+              if (currentHlsInstance) currentHlsInstance.startLoad();
+            }, 600);
+            return;
+          }
+
+          // Recovery Stage 2: If we were playing a synthetic audio-paired blob, revert to direct video stream
+          if (!droppedSyntheticBlob && activeMasterBlobUrl && effectiveSourceUrl === activeMasterBlobUrl) {
+            droppedSyntheticBlob = true;
+            retryCount = 0;
+            console.log('[Preview] Falling back from synthesized audio blob to direct video stream...');
+            statusEl.innerText = 'Connecting directly to primary media stream...';
+            effectiveSourceUrl = chosenVideoUrl;
+            currentHlsInstance.loadSource(chosenVideoUrl);
+            return;
+          }
+
+          // Recovery Stage 3: If alternate variants exist, try alternative quality variant
+          if (!triedVariantFallback && item.variants && item.variants.length > 1) {
+            triedVariantFallback = true;
+            retryCount = 0;
+            const alt = item.variants.find(v => v.url && v.url !== effectiveSourceUrl && v.url !== chosenVideoUrl);
+            if (alt && alt.url) {
+              console.log('[Preview] Switching to alternative quality variant:', alt.label);
+              statusEl.innerText = `Switching to ${alt.label || 'alternative'} quality...`;
+              effectiveSourceUrl = alt.url;
+              currentHlsInstance.loadSource(alt.url);
               return;
             }
           }
 
-          statusEl.style.display = 'block';
-          statusEl.innerHTML = `
-            <div>Stream token expired or connection blocked.</div>
-            <button type="button" class="refresh-stream-btn" id="streamReloadBtn">
-              🔄 Reload Tab to Refresh Stream
-            </button>
-          `;
-          const reloadBtn = document.getElementById('streamReloadBtn');
-          if (reloadBtn) {
-            reloadBtn.onclick = () => {
-              if (activeTabId) {
-                chrome.tabs.reload(activeTabId, () => {
-                  closePreview();
-                  window.close();
-                });
-              }
-            };
+          // Recovery Stage 4: Fall back to native HTML5 video element
+          if (!triedNativeFallback) {
+            triedNativeFallback = true;
+            console.log('[Preview] Testing native HTML5 video player fallback...');
+            statusEl.innerText = 'Testing native browser playback...';
+            currentHlsInstance.destroy();
+            currentHlsInstance = null;
+            video.src = chosenVideoUrl;
+            video.play().catch(() => {});
+            return;
           }
+
+          showStreamErrorUi();
         } else if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR) {
+          console.log('[Preview] Recovering media error...');
           currentHlsInstance.recoverMediaError();
         } else {
+          console.log('[Preview] Fatal error encountered, attempting native player...');
           currentHlsInstance.destroy();
+          currentHlsInstance = null;
           video.src = chosenVideoUrl;
           video.play().catch(() => {});
         }
