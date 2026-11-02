@@ -19,3 +19,4 @@ cd ..
 
 echo "✅ Package created successfully: Universal-Media-Downloader.zip ($(du -h Universal-Media-Downloader.zip | cut -f1))"
 echo "📂 Unpacked folder ready at: $DIR/dist"
+

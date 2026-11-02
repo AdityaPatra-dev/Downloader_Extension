@@ -1,4 +1,5 @@
 let activeTabId = null;
+let activeTabUrl = '';
 let allItems = [];
 let selectedItemIds = new Set();
 let currentCategory = 'all';
@@ -112,7 +113,6 @@ async function openPreview(item) {
   const modal = document.getElementById('playerModal');
   const title = document.getElementById('modalTitle');
   const video = document.getElementById('modalVideo');
-  const ytIframe = document.getElementById('modalYoutubeIframe');
   const info = document.getElementById('modalInfo');
   const statusEl = document.getElementById('playerStatus');
   const unmuteBtn = document.getElementById('unmuteBtn');
@@ -120,35 +120,6 @@ async function openPreview(item) {
 
   title.innerText = item.title || item.filename || 'Stream Preview';
   info.innerText = item.resolutionTag ? `${item.resolutionTag} • ${item.isStream ? 'HLS Stream' : 'Video'}` : 'Media Preview';
-
-  // YouTube Specialization: Embed official player for instant, buffer-free preview with zero CORS errors
-  if (item.isYouTube && item.videoId) {
-    if (activeMasterBlobUrl) {
-      URL.revokeObjectURL(activeMasterBlobUrl);
-      activeMasterBlobUrl = null;
-    }
-    if (currentHlsInstance) {
-      currentHlsInstance.destroy();
-      currentHlsInstance = null;
-    }
-    video.style.display = 'none';
-    video.pause();
-    unmuteBtn.style.display = 'none';
-    statusEl.style.display = 'none';
-    if (ytIframe) {
-      ytIframe.style.display = 'block';
-      ytIframe.src = `https://www.youtube-nocookie.com/embed/${item.videoId}?autoplay=1`;
-    }
-    modal.style.display = 'flex';
-    return;
-  }
-
-  // Non-YouTube items: restore standard video tag
-  if (ytIframe) {
-    ytIframe.style.display = 'none';
-    ytIframe.src = '';
-  }
-  video.style.display = 'block';
 
   let chosenVideoUrl = item.selectedVariantUrl || item.url;
   let chosenAudioUrl = item.selectedAudioUrl || item.audioUrl;
@@ -270,7 +241,7 @@ async function openPreview(item) {
                  (effectiveSourceUrl.includes('m3u8') && !effectiveSourceUrl.includes('.mp4')) ||
                  (item.isStream && item.streamType === 'hls' && !effectiveSourceUrl.startsWith('blob:')) ||
                  isSyntheticMaster;
-  const isHlsTarget = Boolean(window.Hls && window.Hls.isSupported() && isM3u8 && !item.isYouTube);
+  const isHlsTarget = Boolean(window.Hls && window.Hls.isSupported() && isM3u8);
 
   if (isHlsTarget) {
     currentHlsInstance = new window.Hls({
@@ -423,7 +394,6 @@ function setupModalQualitySelect(levels, currentLevel) {
 function closePreview() {
   const modal = document.getElementById('playerModal');
   const video = document.getElementById('modalVideo');
-  const ytIframe = document.getElementById('modalYoutubeIframe');
   const statusEl = document.getElementById('playerStatus');
   const unmuteBtn = document.getElementById('unmuteBtn');
   const modalQualitySelect = document.getElementById('modalQualitySelect');
@@ -437,11 +407,6 @@ function closePreview() {
     currentHlsInstance.destroy();
     currentHlsInstance = null;
   }
-  if (ytIframe) {
-    ytIframe.src = '';
-    ytIframe.style.display = 'none';
-  }
-  video.style.display = 'block';
   video.pause();
   video.removeAttribute('src');
   video.load();
@@ -551,6 +516,17 @@ function renderMediaList() {
   const emptyState = document.getElementById('emptyState');
   const emptyTitle = document.getElementById('emptyTitle');
   const emptySubtext = document.getElementById('emptySubtext');
+
+  // Policy Compliance: Explicit notification on YouTube tabs
+  const isYouTube = activeTabUrl && (activeTabUrl.includes('youtube.com') || activeTabUrl.includes('youtu.be'));
+  if (isYouTube) {
+    cardsList.innerHTML = '';
+    emptyState.style.display = 'flex';
+    emptyTitle.innerText = 'YouTube is Not Supported';
+    emptySubtext.innerText = 'Due to Chrome Web Store Developer Policies, downloading media from YouTube is strictly prohibited.';
+    updateSelectionUI();
+    return;
+  }
 
   const filtered = getFilteredItems();
 
@@ -821,6 +797,15 @@ async function loadMediaItems() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab) return;
     activeTabId = tab.id;
+    activeTabUrl = tab.url || '';
+
+    // If active tab is on YouTube, immediately show compliance message
+    if (activeTabUrl.includes('youtube.com') || activeTabUrl.includes('youtu.be')) {
+      allItems = [];
+      updateCategoryCounts();
+      renderMediaList();
+      return;
+    }
 
     chrome.runtime.sendMessage({
       type: 'GET_MEDIA_ITEMS',

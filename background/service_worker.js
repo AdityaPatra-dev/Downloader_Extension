@@ -222,6 +222,8 @@ function registerMediaItem(tabId, item) {
   if (!tabId || tabId < 0 || !item || !item.url) return;
   // Never store unreadable cross-origin blob: or data: URLs as downloadable items
   if (item.url.startsWith('blob:') || item.url.startsWith('data:')) return;
+  // Store policy: YouTube downloading strictly prohibited
+  if (item.url.includes('youtube.com') || item.url.includes('youtu.be') || item.url.includes('googlevideo.com')) return;
 
   if (!tabMediaStore.has(tabId)) {
     tabMediaStore.set(tabId, new Map());
@@ -373,52 +375,16 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   ['requestHeaders', 'extraHeaders']
 );
 
-// Helper: Extract YouTube itag metadata (resolution, container, category)
-function getYouTubeItagInfo(urlStr) {
-  try {
-    const u = new URL(urlStr);
-    const itag = u.searchParams.get('itag');
-    if (!itag) return null;
-    const itagMap = {
-      '18': { res: '360p', type: 'video', combined: true, ext: 'mp4' },
-      '22': { res: '720p', type: 'video', combined: true, ext: 'mp4' },
-      '137': { res: '1080p', type: 'video', combined: false, ext: 'mp4' },
-      '136': { res: '720p', type: 'video', combined: false, ext: 'mp4' },
-      '135': { res: '480p', type: 'video', combined: false, ext: 'mp4' },
-      '134': { res: '360p', type: 'video', combined: false, ext: 'mp4' },
-      '140': { res: '128k', type: 'audio', combined: false, ext: 'm4a' },
-      '249': { res: '50k', type: 'audio', combined: false, ext: 'opus' },
-      '250': { res: '70k', type: 'audio', combined: false, ext: 'opus' },
-      '251': { res: '160k', type: 'audio', combined: false, ext: 'opus' },
-      '271': { res: '1440p', type: 'video', combined: false, ext: 'webm' },
-      '313': { res: '2160p (4K)', type: 'video', combined: false, ext: 'webm' },
-      '399': { res: '1080p', type: 'video', combined: false, ext: 'mp4' },
-      '398': { res: '720p', type: 'video', combined: false, ext: 'mp4' }
-    };
-    return itagMap[itag] || null;
-  } catch (_) {
-    return null;
-  }
-}
-
-// Helper: Normalize YouTube videoplayback URL by stripping chunk range parameters
-function normalizeVideoPlaybackUrl(rawUrl) {
-  try {
-    const u = new URL(rawUrl);
-    u.searchParams.delete('range');
-    u.searchParams.delete('rn');
-    u.searchParams.delete('rbuf');
-    return u.toString();
-  } catch (_) {
-    return rawUrl;
-  }
-}
-
 // 2. Intercept network responses to inspect MIME, Content-Disposition, and Size
 chrome.webRequest.onHeadersReceived.addListener(
   (details) => {
     const { tabId, url, responseHeaders, requestId } = details;
     if (tabId < 0 || !url || url.startsWith('chrome-extension://')) return;
+
+    // Strict Store Compliance: Exclude YouTube media sniffing
+    if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('googlevideo.com')) {
+      return;
+    }
 
     // Filter out internal streaming segment chunks (0.m4s, init.mp4, chunk.ts, etc.)
     if (isStreamFragment(url)) {
@@ -443,64 +409,6 @@ chrome.webRequest.onHeadersReceived.addListener(
     }
 
     const reqHeaders = requestHeadersMap.get(requestId) || {};
-
-    // Special handling for YouTube streaming media (googlevideo.com/videoplayback)
-    if (url.includes('googlevideo.com/videoplayback')) {
-      const itagInfo = getYouTubeItagInfo(url);
-
-      // If it's a subsequent byte range chunk (range > 0), ignore to prevent clutter
-      const rangeMatch = url.match(/[?&]range=(\d+)-/);
-      if (rangeMatch && parseInt(rangeMatch[1], 10) > 0) {
-        return;
-      }
-
-      // Strip range parameter to construct complete downloadable stream URL
-      const fullStreamUrl = normalizeVideoPlaybackUrl(url);
-
-      // Attach direct stream URL to the YouTube page video item if registered
-      const store = tabMediaStore.get(tabId);
-      if (store) {
-        for (const item of store.values()) {
-          if (item.isYouTube) {
-            if (!item.directStreamUrl || (itagInfo && !itagInfo.combined && itagInfo.type === 'video')) {
-              item.directStreamUrl = fullStreamUrl;
-              if (itagInfo?.res) {
-                item.resolutionTag = itagInfo.res;
-              }
-            }
-          }
-        }
-      }
-
-      // If this full stream URL is already registered in this tab, skip
-      if (store && store.has(fullStreamUrl)) {
-        return;
-      }
-
-      const streamCategory = itagInfo?.type || (mimeType.startsWith('audio/') ? 'audio' : 'video');
-      const resSuffix = itagInfo?.res ? ` (${itagInfo.res})` : '';
-      const pageTitle = tabTitleMap.get(tabId) || '';
-      const cleanTitle = sanitizeTitle(pageTitle) || 'YouTube Media';
-      const ext = itagInfo?.ext || (streamCategory === 'audio' ? 'm4a' : 'mp4');
-
-      registerMediaItem(tabId, {
-        url: fullStreamUrl,
-        tabId,
-        category: streamCategory,
-        extension: ext,
-        filename: `${cleanTitle}${resSuffix}.${ext}`,
-        title: `${cleanTitle}${resSuffix}`,
-        resolutionTag: itagInfo?.res || '',
-        isStream: false,
-        mimeType,
-        size: contentLength || 0,
-        referer: reqHeaders['referer'] || 'https://www.youtube.com/',
-        origin: reqHeaders['origin'] || 'https://www.youtube.com',
-        userAgent: reqHeaders['user-agent'] || navigator.userAgent,
-        source: 'network'
-      });
-      return;
-    }
     const classification = classifyResource(url, mimeType, contentDisposition);
 
     // Filter out generic HTML/JS that are not downloads
@@ -636,6 +544,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (type === 'START_DIRECT_DOWNLOAD') {
     const { url, filename, referer, origin } = payload;
+    if (url && (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('googlevideo.com'))) {
+      sendResponse({ success: false, error: 'YouTube downloading is disabled per store policy.' });
+      return true;
+    }
     const downloadOptions = {
       url,
       filename: filename || 'download.bin',
@@ -729,6 +641,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (type === 'START_HLS_DOWNLOAD') {
+    if (payload?.url && (payload.url.includes('youtube.com') || payload.url.includes('youtu.be') || payload.url.includes('googlevideo.com'))) {
+      sendResponse({ success: false, error: 'YouTube downloading is disabled per store policy.' });
+      return true;
+    }
     setupStreamHeaders(payload.url, payload.referer, payload.origin, payload.audioUrl)
       .then(() => ensureOffscreenDocument())
       .then(() => {
