@@ -130,6 +130,7 @@ async function openPreview(item) {
 
   // Ensure dynamic declarativeNetRequest rules are fully applied before loading stream
   await new Promise((resolve) => {
+    const timer = setTimeout(resolve, 800);
     chrome.runtime.sendMessage({
       type: 'PREPARE_STREAM_HEADERS',
       payload: {
@@ -138,7 +139,10 @@ async function openPreview(item) {
         origin: item.origin,
         audioUrl: chosenAudioUrl
       }
-    }, () => resolve());
+    }, () => {
+      clearTimeout(timer);
+      resolve();
+    });
   });
 
   if (activeMasterBlobUrl) {
@@ -214,9 +218,12 @@ async function openPreview(item) {
   };
 
   // Determine effective stream source:
-  // Only synthesize combined master blob if explicitly dual-track or audio is known separate
+  // If master playlist exists, Hls.js can natively handle audio/video tracks.
+  // Only synthesize combined blob if explicitly dual-track and separate without master playlist.
   let effectiveSourceUrl = chosenVideoUrl;
-  if (item.category === 'video' && chosenAudioUrl && item.isDualTrack && !chosenVideoUrl.includes('master') && !chosenVideoUrl.includes('xbsobkq')) {
+  if (item.masterUrl && !item.selectedVariantUrl) {
+    effectiveSourceUrl = item.masterUrl;
+  } else if (item.category === 'video' && chosenAudioUrl && chosenAudioUrl !== chosenVideoUrl && item.isDualTrack && !chosenVideoUrl.includes('master')) {
     activeMasterBlobUrl = createCombinedMasterBlob(chosenVideoUrl, chosenAudioUrl);
     effectiveSourceUrl = activeMasterBlobUrl;
   }

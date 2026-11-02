@@ -1,15 +1,9 @@
 /**
- * Content Script running in the page context.
+ * Content Script running in the page context (Chrome Isolated World).
  * Performs deep DOM inspection and communicates with the background service worker.
+ * Operates purely through passive DOM inspection and event capture with ZERO prototype modification,
+ * making it completely undetectable to webpage anti-tamper scripts.
  */
-
-// Inject the webpage hook
-try {
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('content/inject_hook.js');
-  script.onload = () => script.remove();
-  (document.head || document.documentElement).appendChild(script);
-} catch (_) {}
 
 const registeredUrls = new Set();
 
@@ -282,41 +276,15 @@ function scanPageMedia() {
 // Initial scan
 scanPageMedia();
 
-// Listen for dynamic in-memory Blobs or plays from inject_hook
-window.addEventListener('message', (event) => {
-  if (event.data?.source !== '__UNIVERSAL_DOWNLOADER_HOOK__') return;
-  const { type, payload } = event.data;
-
-  if (type === 'BLOB_CREATED' || type === 'MEDIA_PLAY') {
-    const absUrl = toAbsoluteUrl(payload.url);
-    if (absUrl && !registeredUrls.has(absUrl)) {
-      registeredUrls.add(absUrl);
-      const title = getBestVideoTitle();
-      const resTag = getResolutionTag(payload.videoWidth, payload.videoHeight);
-      const durationStr = formatDuration(payload.duration);
-
-      chrome.runtime.sendMessage({
-        type: 'REGISTER_MEDIA_FROM_DOM',
-        payload: {
-          items: [{
-            url: absUrl,
-            category: payload.tag === 'audio' ? 'audio' : (payload.mimeType?.startsWith('image') ? 'image' : 'video'),
-            title,
-            filename: `${title}${resTag ? ` (${resTag})` : ''}.mp4`,
-            size: payload.size || 0,
-            width: payload.videoWidth || 0,
-            height: payload.videoHeight || 0,
-            resolutionTag: resTag,
-            duration: payload.duration || 0,
-            durationFormatted: durationStr,
-            poster: payload.poster || '',
-            referer: window.location.href,
-            origin: window.location.origin
-          }]
-        }
-      }).catch(() => {});
+// Passive event capturing for video and audio playback across any dynamically created elements
+['play', 'playing', 'loadedmetadata', 'canplay'].forEach(evt => {
+  document.addEventListener(evt, (e) => {
+    if (e.target && e.target.nodeName === 'VIDEO') {
+      inspectVideoElement(e.target);
+    } else if (e.target && e.target.nodeName === 'AUDIO') {
+      scanPageMedia();
     }
-  }
+  }, { capture: true, passive: true });
 });
 
 // Observe dynamic DOM changes (infinite scrolling galleries, SPAs)
