@@ -106,85 +106,13 @@ function createCombinedMasterBlob(videoUrl, audioUrl) {
 }
 
 /**
- * Chrome MV3 Compliant Fetch Loader for Hls.js.
- * Utilizes extension host permissions (<all_urls>) to bypass cross-origin restrictions,
- * eliminating NETWORK_ERROR and CORS failures on protected media CDNs.
- */
-class FetchLoader {
-  constructor(config) {
-    this.controller = new AbortController();
-    this.stats = {
-      trequest: 0,
-      tfirst: 0,
-      tload: 0,
-      loaded: 0,
-      total: 0,
-      retry: 0
-    };
-  }
-
-  destroy() {
-    this.abort();
-  }
-
-  abort() {
-    if (this.controller) {
-      try {
-        this.controller.abort();
-      } catch (_) {}
-      this.controller = null;
-    }
-  }
-
-  async load(context, config, callbacks) {
-    this.stats.trequest = performance.now();
-    try {
-      const headers = {};
-      if (context.rangeStart !== undefined && context.rangeEnd !== undefined) {
-        headers['Range'] = `bytes=${context.rangeStart}-${context.rangeEnd - 1}`;
-      }
-
-      const res = await fetch(context.url, {
-        method: 'GET',
-        headers,
-        signal: this.controller?.signal,
-        credentials: 'omit'
-      });
-
-      this.stats.tfirst = performance.now();
-
-      if (!res.ok) {
-        callbacks.onError({ code: res.status, text: res.statusText }, context, res);
-        return;
-      }
-
-      let data;
-      if (context.responseType === 'arraybuffer') {
-        data = await res.arrayBuffer();
-      } else {
-        data = await res.text();
-      }
-
-      this.stats.tload = performance.now();
-      const length = data.byteLength || data.length || 0;
-      this.stats.loaded = length;
-      this.stats.total = length;
-
-      callbacks.onSuccess({ url: res.url, data }, this.stats, context, res);
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-      callbacks.onError({ code: 0, text: err.message }, context, null);
-    }
-  }
-}
-
-/**
  * Open Video Preview Modal.
  */
 async function openPreview(item) {
   const modal = document.getElementById('playerModal');
   const title = document.getElementById('modalTitle');
   const video = document.getElementById('modalVideo');
+  const ytIframe = document.getElementById('modalYoutubeIframe');
   const info = document.getElementById('modalInfo');
   const statusEl = document.getElementById('playerStatus');
   const unmuteBtn = document.getElementById('unmuteBtn');
@@ -192,6 +120,35 @@ async function openPreview(item) {
 
   title.innerText = item.title || item.filename || 'Stream Preview';
   info.innerText = item.resolutionTag ? `${item.resolutionTag} • ${item.isStream ? 'HLS Stream' : 'Video'}` : 'Media Preview';
+
+  // YouTube Specialization: Embed official player for instant, buffer-free preview with zero CORS errors
+  if (item.isYouTube && item.videoId) {
+    if (activeMasterBlobUrl) {
+      URL.revokeObjectURL(activeMasterBlobUrl);
+      activeMasterBlobUrl = null;
+    }
+    if (currentHlsInstance) {
+      currentHlsInstance.destroy();
+      currentHlsInstance = null;
+    }
+    video.style.display = 'none';
+    video.pause();
+    unmuteBtn.style.display = 'none';
+    statusEl.style.display = 'none';
+    if (ytIframe) {
+      ytIframe.style.display = 'block';
+      ytIframe.src = `https://www.youtube-nocookie.com/embed/${item.videoId}?autoplay=1`;
+    }
+    modal.style.display = 'flex';
+    return;
+  }
+
+  // Non-YouTube items: restore standard video tag
+  if (ytIframe) {
+    ytIframe.style.display = 'none';
+    ytIframe.src = '';
+  }
+  video.style.display = 'block';
 
   let chosenVideoUrl = item.selectedVariantUrl || item.url;
   let chosenAudioUrl = item.selectedAudioUrl || item.audioUrl;
@@ -205,7 +162,7 @@ async function openPreview(item) {
 
   // Ensure dynamic declarativeNetRequest rules are fully applied before loading stream
   await new Promise((resolve) => {
-    const timer = setTimeout(resolve, 800);
+    const timer = setTimeout(resolve, 600);
     chrome.runtime.sendMessage({
       type: 'PREPARE_STREAM_HEADERS',
       payload: {
@@ -283,7 +240,7 @@ async function openPreview(item) {
     if (dlBtn) {
       dlBtn.onclick = () => {
         closePreview();
-        startDownload(item);
+        triggerDownload(item);
       };
     }
   };
@@ -295,7 +252,6 @@ async function openPreview(item) {
 
   // Determine effective stream source:
   // If master playlist exists, Hls.js MUST load master playlist to retain audio track syncing.
-  // Quality resolution switching is then handled via Hls.js level selection without losing audio.
   let effectiveSourceUrl = chosenVideoUrl;
   if (masterPlaylistUrl) {
     effectiveSourceUrl = masterPlaylistUrl;
@@ -306,14 +262,15 @@ async function openPreview(item) {
 
   let retryCount = 0;
   let droppedSyntheticBlob = false;
-  let triedVariantFallback = false;
   let triedNativeFallback = false;
 
-  const isHlsTarget = Boolean(window.Hls && window.Hls.isSupported() && (
-    effectiveSourceUrl.includes('.m3u8') || 
-    effectiveSourceUrl.startsWith('blob:') || 
-    item.isStream
-  ));
+  // Only pass actual HLS manifests to Hls.js (never external blob: or non-m3u8 files)
+  const isSyntheticMaster = Boolean(activeMasterBlobUrl && effectiveSourceUrl === activeMasterBlobUrl);
+  const isM3u8 = effectiveSourceUrl.includes('.m3u8') || 
+                 (effectiveSourceUrl.includes('m3u8') && !effectiveSourceUrl.includes('.mp4')) ||
+                 (item.isStream && item.streamType === 'hls' && !effectiveSourceUrl.startsWith('blob:')) ||
+                 isSyntheticMaster;
+  const isHlsTarget = Boolean(window.Hls && window.Hls.isSupported() && isM3u8 && !item.isYouTube);
 
   if (isHlsTarget) {
     currentHlsInstance = new window.Hls({
@@ -321,18 +278,18 @@ async function openPreview(item) {
       lowLatencyMode: false,
       backBufferLength: 60,
       maxBufferLength: 30,
-      manifestLoadingTimeOut: 20000,
-      manifestLoadingMaxRetry: 4,
+      manifestLoadingTimeOut: 15000,
+      manifestLoadingMaxRetry: 2,
       manifestLoadingRetryDelay: 500,
-      levelLoadingTimeOut: 20000,
-      levelLoadingMaxRetry: 4,
+      levelLoadingTimeOut: 15000,
+      levelLoadingMaxRetry: 2,
       levelLoadingRetryDelay: 500,
-      fragLoadingTimeOut: 25000,
-      fragLoadingMaxRetry: 6,
+      fragLoadingTimeOut: 20000,
+      fragLoadingMaxRetry: 3,
       fragLoadingRetryDelay: 500,
-      loader: FetchLoader,
-      pLoader: FetchLoader,
-      fLoader: FetchLoader
+      xhrSetup: (xhr) => {
+        xhr.withCredentials = false;
+      }
     });
 
     currentHlsInstance.loadSource(effectiveSourceUrl);
@@ -363,11 +320,11 @@ async function openPreview(item) {
       console.warn('HLS preview error:', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
-          // Recovery Stage 1: Auto-retry via Hls.js loadSource or startLoad
-          if (retryCount < 2) {
+          // Recovery Stage 1: Exactly 1 auto-retry, never enter an infinite loop
+          if (retryCount < 1) {
             retryCount++;
-            console.log(`[Preview] Network recovery attempt ${retryCount}/2...`);
-            statusEl.innerText = `Reconnecting stream (attempt ${retryCount}/2)...`;
+            console.log(`[Preview] Network recovery attempt ${retryCount}/1...`);
+            statusEl.innerText = `Reconnecting stream (attempt ${retryCount}/1)...`;
             setTimeout(() => {
               if (!currentHlsInstance) return;
               if (data.details === 'manifestLoadError' || data.details === 'levelLoadError' || data.details === 'audioTrackLoadError') {
@@ -375,14 +332,13 @@ async function openPreview(item) {
               } else {
                 currentHlsInstance.startLoad();
               }
-            }, 600);
+            }, 500);
             return;
           }
 
-          // Recovery Stage 2: If we were playing a synthetic audio-paired blob, revert to direct video stream
+          // Recovery Stage 2: Fall back from synthesized audio blob to direct stream
           if (!droppedSyntheticBlob && activeMasterBlobUrl && effectiveSourceUrl === activeMasterBlobUrl) {
             droppedSyntheticBlob = true;
-            retryCount = 0;
             console.log('[Preview] Falling back from synthesized audio blob to direct video stream...');
             statusEl.innerText = 'Connecting directly to primary media stream...';
             effectiveSourceUrl = chosenVideoUrl;
@@ -390,21 +346,7 @@ async function openPreview(item) {
             return;
           }
 
-          // Recovery Stage 3: If alternate variants exist, try alternative quality variant
-          if (!triedVariantFallback && item.variants && item.variants.length > 1) {
-            triedVariantFallback = true;
-            retryCount = 0;
-            const alt = item.variants.find(v => v.url && v.url !== effectiveSourceUrl && v.url !== chosenVideoUrl);
-            if (alt && alt.url) {
-              console.log('[Preview] Switching to alternative quality variant:', alt.label);
-              statusEl.innerText = `Switching to ${alt.label || 'alternative'} quality...`;
-              effectiveSourceUrl = alt.url;
-              currentHlsInstance.loadSource(alt.url);
-              return;
-            }
-          }
-
-          // Recovery Stage 4: Fall back to native HTML5 video element
+          // Recovery Stage 3: Fall back to native HTML5 video element
           if (!triedNativeFallback) {
             triedNativeFallback = true;
             console.log('[Preview] Testing native HTML5 video player fallback...');
@@ -421,11 +363,7 @@ async function openPreview(item) {
           console.log('[Preview] Recovering media error...');
           currentHlsInstance.recoverMediaError();
         } else {
-          console.log('[Preview] Fatal error encountered, attempting native player...');
-          currentHlsInstance.destroy();
-          currentHlsInstance = null;
-          video.src = chosenVideoUrl;
-          video.play().catch(() => {});
+          showStreamErrorUi();
         }
       }
     });
@@ -485,6 +423,7 @@ function setupModalQualitySelect(levels, currentLevel) {
 function closePreview() {
   const modal = document.getElementById('playerModal');
   const video = document.getElementById('modalVideo');
+  const ytIframe = document.getElementById('modalYoutubeIframe');
   const statusEl = document.getElementById('playerStatus');
   const unmuteBtn = document.getElementById('unmuteBtn');
   const modalQualitySelect = document.getElementById('modalQualitySelect');
@@ -498,6 +437,11 @@ function closePreview() {
     currentHlsInstance.destroy();
     currentHlsInstance = null;
   }
+  if (ytIframe) {
+    ytIframe.src = '';
+    ytIframe.style.display = 'none';
+  }
+  video.style.display = 'block';
   video.pause();
   video.removeAttribute('src');
   video.load();
@@ -546,10 +490,11 @@ function triggerDownload(item) {
       }
     });
   } else {
+    const downloadTargetUrl = item.selectedVariantUrl || item.directStreamUrl || item.url;
     chrome.runtime.sendMessage({
       type: 'START_DIRECT_DOWNLOAD',
       payload: {
-        url: item.selectedVariantUrl || item.url,
+        url: downloadTargetUrl,
         filename: downloadFilename,
         referer: item.referer,
         origin: item.origin

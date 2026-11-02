@@ -49,6 +49,25 @@ function getBestVideoTitle() {
 }
 
 /**
+ * Extract YouTube video ID from URL or page.
+ */
+function getYouTubeVideoId(urlStr = window.location.href) {
+  try {
+    const u = new URL(urlStr);
+    if (u.hostname.includes('youtube.com')) {
+      if (u.searchParams.has('v')) return u.searchParams.get('v');
+      const parts = u.pathname.split('/').filter(Boolean);
+      if (parts[0] === 'shorts' || parts[0] === 'embed' || parts[0] === 'v' || parts[0] === 'live') {
+        return parts[1] || null;
+      }
+    } else if (u.hostname === 'youtu.be') {
+      return u.pathname.substring(1).split('?')[0] || null;
+    }
+  } catch (_) {}
+  return null;
+}
+
+/**
  * Format duration in seconds to MM:SS or HH:MM:SS.
  */
 function formatDuration(seconds) {
@@ -118,6 +137,34 @@ function inspectVideoElement(video) {
   }
 
   const items = [];
+
+  // YouTube Specialized Detection: Extract rich video metadata directly from YouTube DOM
+  if (window.location.hostname.includes('youtube.com') || window.location.hostname.includes('youtu.be')) {
+    const videoId = getYouTubeVideoId();
+    if (videoId) {
+      const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      const ytPoster = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      const cleanFilename = `${title || 'YouTube Video'}${resTag ? ` (${resTag})` : ''}.mp4`;
+      items.push({
+        url: ytUrl,
+        category: 'video',
+        title: title || 'YouTube Video',
+        filename: cleanFilename,
+        isYouTube: true,
+        videoId: videoId,
+        width,
+        height,
+        resolutionTag: resTag || 'HD',
+        duration,
+        durationFormatted: durationStr,
+        poster: poster || ytPoster,
+        isStream: false,
+        referer: window.location.href,
+        origin: window.location.origin
+      });
+    }
+  }
+
   for (const rawUrl of candidates) {
     const absUrl = toAbsoluteUrl(rawUrl);
     // Never register unreadable cross-origin blob: or data: URLs as downloadable items
@@ -197,12 +244,48 @@ function parseSrcsetBest(srcsetString) {
 function scanPageMedia() {
   const detected = [];
 
-  // 1. Scan and Hook HTML5 Videos
+  // 1. YouTube Specialized Detection: Extract rich video metadata directly
+  if (window.location.hostname.includes('youtube.com') || window.location.hostname.includes('youtu.be')) {
+    const videoId = getYouTubeVideoId();
+    if (videoId) {
+      const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      if (!registeredUrls.has(ytUrl)) {
+        registeredUrls.add(ytUrl);
+        const title = getBestVideoTitle();
+        const videoEl = document.querySelector('video');
+        const duration = videoEl?.duration && !isNaN(videoEl.duration) ? videoEl.duration : 0;
+        const width = videoEl?.videoWidth || 0;
+        const height = videoEl?.videoHeight || 0;
+        const resTag = getResolutionTag(width, height) || 'HD';
+        const durationStr = formatDuration(duration);
+        const poster = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+        detected.push({
+          url: ytUrl,
+          category: 'video',
+          title: title || 'YouTube Video',
+          filename: `${title || 'YouTube_Video'}${resTag ? ` (${resTag})` : ''}.mp4`,
+          isYouTube: true,
+          videoId: videoId,
+          poster,
+          duration,
+          durationFormatted: durationStr,
+          width,
+          height,
+          resolutionTag: resTag,
+          referer: window.location.href,
+          origin: window.location.origin
+        });
+      }
+    }
+  }
+
+  // 2. Scan and Hook HTML5 Videos
   document.querySelectorAll('video').forEach((video) => {
     hookVideoElement(video);
   });
 
-  // 2. Scan HTML5 Audio
+  // 3. Scan HTML5 Audio
   document.querySelectorAll('audio').forEach((audio) => {
     const src = audio.currentSrc || audio.src;
     const sources = Array.from(audio.querySelectorAll('source')).map(s => s.src).filter(Boolean);
@@ -317,3 +400,7 @@ observer.observe(document.documentElement, {
   attributes: true,
   attributeFilter: ['src', 'srcset', 'data-src']
 });
+
+// Detect SPA dynamic video changes (YouTube, Vimeo, Twitter, etc.)
+window.addEventListener('yt-navigate-finish', () => setTimeout(scanPageMedia, 400), { passive: true });
+window.addEventListener('popstate', () => setTimeout(scanPageMedia, 400), { passive: true });

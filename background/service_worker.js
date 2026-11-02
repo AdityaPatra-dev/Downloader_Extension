@@ -73,14 +73,28 @@ async function setupStreamHeaders(url, referer, origin, audioUrl, tabId) {
       conditionBase.excludedTabIds = [tabId];
     }
 
-    // Rule 1: Explicit target media domain and its subdomains
+    // Rule 1: Catch-all for extension preview & download contexts across any CDN domains
+    rulesToAdd.push({
+      id: STREAM_RULE_ID_INITIATOR,
+      priority: 90,
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders,
+        responseHeaders
+      },
+      condition: {
+        ...conditionBase
+      }
+    });
+
+    // Rule 2: Explicit target media domain and its subdomains
     try {
       const urlObj = new URL(url);
       if (urlObj.hostname) {
         const rootDomain = getRootDomain(urlObj.hostname);
         rulesToAdd.push({
           id: STREAM_RULE_ID_DOMAIN,
-          priority: 99,
+          priority: 100,
           action: {
             type: 'modifyHeaders',
             requestHeaders,
@@ -94,7 +108,7 @@ async function setupStreamHeaders(url, referer, origin, audioUrl, tabId) {
       }
     } catch (_) {}
 
-    // Rule 2: Explicit audio domain if different
+    // Rule 3: Explicit audio domain if different
     if (audioUrl) {
       try {
         const audioObj = new URL(audioUrl);
@@ -231,7 +245,10 @@ function registerMediaItem(tabId, item) {
       size: item.size || existing.size || 0,
       estimatedSize: item.estimatedSize || existing.estimatedSize || 0,
       referer: item.referer || existing.referer || '',
-      origin: item.origin || existing.origin || ''
+      origin: item.origin || existing.origin || '',
+      directStreamUrl: item.directStreamUrl || existing.directStreamUrl || null,
+      isYouTube: item.isYouTube ?? existing.isYouTube,
+      videoId: item.videoId || existing.videoId || null
     });
     return;
   }
@@ -356,6 +373,47 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   ['requestHeaders', 'extraHeaders']
 );
 
+// Helper: Extract YouTube itag metadata (resolution, container, category)
+function getYouTubeItagInfo(urlStr) {
+  try {
+    const u = new URL(urlStr);
+    const itag = u.searchParams.get('itag');
+    if (!itag) return null;
+    const itagMap = {
+      '18': { res: '360p', type: 'video', combined: true, ext: 'mp4' },
+      '22': { res: '720p', type: 'video', combined: true, ext: 'mp4' },
+      '137': { res: '1080p', type: 'video', combined: false, ext: 'mp4' },
+      '136': { res: '720p', type: 'video', combined: false, ext: 'mp4' },
+      '135': { res: '480p', type: 'video', combined: false, ext: 'mp4' },
+      '134': { res: '360p', type: 'video', combined: false, ext: 'mp4' },
+      '140': { res: '128k', type: 'audio', combined: false, ext: 'm4a' },
+      '249': { res: '50k', type: 'audio', combined: false, ext: 'opus' },
+      '250': { res: '70k', type: 'audio', combined: false, ext: 'opus' },
+      '251': { res: '160k', type: 'audio', combined: false, ext: 'opus' },
+      '271': { res: '1440p', type: 'video', combined: false, ext: 'webm' },
+      '313': { res: '2160p (4K)', type: 'video', combined: false, ext: 'webm' },
+      '399': { res: '1080p', type: 'video', combined: false, ext: 'mp4' },
+      '398': { res: '720p', type: 'video', combined: false, ext: 'mp4' }
+    };
+    return itagMap[itag] || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+// Helper: Normalize YouTube videoplayback URL by stripping chunk range parameters
+function normalizeVideoPlaybackUrl(rawUrl) {
+  try {
+    const u = new URL(rawUrl);
+    u.searchParams.delete('range');
+    u.searchParams.delete('rn');
+    u.searchParams.delete('rbuf');
+    return u.toString();
+  } catch (_) {
+    return rawUrl;
+  }
+}
+
 // 2. Intercept network responses to inspect MIME, Content-Disposition, and Size
 chrome.webRequest.onHeadersReceived.addListener(
   (details) => {
@@ -385,6 +443,64 @@ chrome.webRequest.onHeadersReceived.addListener(
     }
 
     const reqHeaders = requestHeadersMap.get(requestId) || {};
+
+    // Special handling for YouTube streaming media (googlevideo.com/videoplayback)
+    if (url.includes('googlevideo.com/videoplayback')) {
+      const itagInfo = getYouTubeItagInfo(url);
+
+      // If it's a subsequent byte range chunk (range > 0), ignore to prevent clutter
+      const rangeMatch = url.match(/[?&]range=(\d+)-/);
+      if (rangeMatch && parseInt(rangeMatch[1], 10) > 0) {
+        return;
+      }
+
+      // Strip range parameter to construct complete downloadable stream URL
+      const fullStreamUrl = normalizeVideoPlaybackUrl(url);
+
+      // Attach direct stream URL to the YouTube page video item if registered
+      const store = tabMediaStore.get(tabId);
+      if (store) {
+        for (const item of store.values()) {
+          if (item.isYouTube) {
+            if (!item.directStreamUrl || (itagInfo && !itagInfo.combined && itagInfo.type === 'video')) {
+              item.directStreamUrl = fullStreamUrl;
+              if (itagInfo?.res) {
+                item.resolutionTag = itagInfo.res;
+              }
+            }
+          }
+        }
+      }
+
+      // If this full stream URL is already registered in this tab, skip
+      if (store && store.has(fullStreamUrl)) {
+        return;
+      }
+
+      const streamCategory = itagInfo?.type || (mimeType.startsWith('audio/') ? 'audio' : 'video');
+      const resSuffix = itagInfo?.res ? ` (${itagInfo.res})` : '';
+      const pageTitle = tabTitleMap.get(tabId) || '';
+      const cleanTitle = sanitizeTitle(pageTitle) || 'YouTube Media';
+      const ext = itagInfo?.ext || (streamCategory === 'audio' ? 'm4a' : 'mp4');
+
+      registerMediaItem(tabId, {
+        url: fullStreamUrl,
+        tabId,
+        category: streamCategory,
+        extension: ext,
+        filename: `${cleanTitle}${resSuffix}.${ext}`,
+        title: `${cleanTitle}${resSuffix}`,
+        resolutionTag: itagInfo?.res || '',
+        isStream: false,
+        mimeType,
+        size: contentLength || 0,
+        referer: reqHeaders['referer'] || 'https://www.youtube.com/',
+        origin: reqHeaders['origin'] || 'https://www.youtube.com',
+        userAgent: reqHeaders['user-agent'] || navigator.userAgent,
+        source: 'network'
+      });
+      return;
+    }
     const classification = classifyResource(url, mimeType, contentDisposition);
 
     // Filter out generic HTML/JS that are not downloads
@@ -442,7 +558,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     tabMediaStore.delete(tabId);
     updateBadge(tabId);
     chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
+      removeRuleIds: [STREAM_RULE_ID_INITIATOR, STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
     }).catch(() => {});
   }
 });
@@ -581,7 +697,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (type === 'CLEANUP_STREAM_HEADERS') {
     chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
+      removeRuleIds: [STREAM_RULE_ID_INITIATOR, STREAM_RULE_ID_DOMAIN, STREAM_RULE_ID_AUDIO]
     }).catch(() => {});
     sendResponse({ success: true });
     return true;
