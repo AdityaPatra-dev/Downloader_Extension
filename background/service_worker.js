@@ -18,8 +18,9 @@ const STREAM_RULE_ID_AUDIO = 9996;
 /**
  * Configure dynamic DeclarativeNetRequest rules to inject Referer and allow CORS
  * for preview playback and stream chunk fetching across all CDN domains.
+ * Excludes the active webpage tab to ensure zero interference with the host player.
  */
-async function setupStreamHeaders(url, referer, origin, audioUrl) {
+async function setupStreamHeaders(url, referer, origin, audioUrl, tabId) {
   if (!url) return;
   try {
     let effectiveReferer = referer;
@@ -48,8 +49,7 @@ async function setupStreamHeaders(url, referer, origin, audioUrl) {
     }
 
     const responseHeaders = [
-      { header: 'Access-Control-Allow-Origin', operation: 'set', value: effectiveOrigin || '*' },
-      { header: 'Access-Control-Allow-Credentials', operation: 'set', value: 'true' },
+      { header: 'Access-Control-Allow-Origin', operation: 'set', value: '*' },
       { header: 'Access-Control-Allow-Methods', operation: 'set', value: 'GET, HEAD, OPTIONS, POST' },
       { header: 'Access-Control-Allow-Headers', operation: 'set', value: '*' },
       { header: 'Access-Control-Expose-Headers', operation: 'set', value: '*' }
@@ -57,10 +57,27 @@ async function setupStreamHeaders(url, referer, origin, audioUrl) {
 
     const rulesToAdd = [];
 
-    // Rule 1: Explicit target media domain (scoped strictly to xhr/media/other, never main_frame/sub_frame)
+    function getRootDomain(hostname) {
+      if (!hostname) return '';
+      const parts = hostname.split('.');
+      if (parts.length >= 2) {
+        return parts.slice(-2).join('.');
+      }
+      return hostname;
+    }
+
+    const conditionBase = {
+      resourceTypes: ['xmlhttprequest', 'media', 'other']
+    };
+    if (tabId && tabId > 0) {
+      conditionBase.excludedTabIds = [tabId];
+    }
+
+    // Rule 1: Explicit target media domain and its subdomains
     try {
       const urlObj = new URL(url);
       if (urlObj.hostname) {
+        const rootDomain = getRootDomain(urlObj.hostname);
         rulesToAdd.push({
           id: STREAM_RULE_ID_DOMAIN,
           priority: 99,
@@ -70,8 +87,8 @@ async function setupStreamHeaders(url, referer, origin, audioUrl) {
             responseHeaders
           },
           condition: {
-            urlFilter: `||${urlObj.hostname}`,
-            resourceTypes: ['xmlhttprequest', 'media', 'other']
+            ...conditionBase,
+            urlFilter: `||${rootDomain}`
           }
         });
       }
@@ -83,6 +100,7 @@ async function setupStreamHeaders(url, referer, origin, audioUrl) {
         const audioObj = new URL(audioUrl);
         const urlObj = new URL(url);
         if (audioObj.hostname && audioObj.hostname !== urlObj.hostname) {
+          const audioRoot = getRootDomain(audioObj.hostname);
           rulesToAdd.push({
             id: STREAM_RULE_ID_AUDIO,
             priority: 98,
@@ -92,8 +110,8 @@ async function setupStreamHeaders(url, referer, origin, audioUrl) {
               responseHeaders
             },
             condition: {
-              urlFilter: `||${audioObj.hostname}`,
-              resourceTypes: ['xmlhttprequest', 'media', 'other']
+              ...conditionBase,
+              urlFilter: `||${audioRoot}`
             }
           });
         }
@@ -553,8 +571,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (type === 'PREPARE_STREAM_HEADERS') {
-    const { url, referer, origin, audioUrl } = payload;
-    setupStreamHeaders(url, referer, origin, audioUrl)
+    const { url, referer, origin, audioUrl, tabId: passedTabId } = payload;
+    const effectiveTabId = passedTabId || tabId;
+    setupStreamHeaders(url, referer, origin, audioUrl, effectiveTabId)
       .then(() => sendResponse({ success: true }))
       .catch((err) => sendResponse({ success: false, error: err.message }));
     return true;

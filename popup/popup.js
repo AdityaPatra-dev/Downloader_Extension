@@ -106,6 +106,79 @@ function createCombinedMasterBlob(videoUrl, audioUrl) {
 }
 
 /**
+ * Chrome MV3 Compliant Fetch Loader for Hls.js.
+ * Utilizes extension host permissions (<all_urls>) to bypass cross-origin restrictions,
+ * eliminating NETWORK_ERROR and CORS failures on protected media CDNs.
+ */
+class FetchLoader {
+  constructor(config) {
+    this.controller = new AbortController();
+    this.stats = {
+      trequest: 0,
+      tfirst: 0,
+      tload: 0,
+      loaded: 0,
+      total: 0,
+      retry: 0
+    };
+  }
+
+  destroy() {
+    this.abort();
+  }
+
+  abort() {
+    if (this.controller) {
+      try {
+        this.controller.abort();
+      } catch (_) {}
+      this.controller = null;
+    }
+  }
+
+  async load(context, config, callbacks) {
+    this.stats.trequest = performance.now();
+    try {
+      const headers = {};
+      if (context.rangeStart !== undefined && context.rangeEnd !== undefined) {
+        headers['Range'] = `bytes=${context.rangeStart}-${context.rangeEnd - 1}`;
+      }
+
+      const res = await fetch(context.url, {
+        method: 'GET',
+        headers,
+        signal: this.controller?.signal,
+        credentials: 'omit'
+      });
+
+      this.stats.tfirst = performance.now();
+
+      if (!res.ok) {
+        callbacks.onError({ code: res.status, text: res.statusText }, context, res);
+        return;
+      }
+
+      let data;
+      if (context.responseType === 'arraybuffer') {
+        data = await res.arrayBuffer();
+      } else {
+        data = await res.text();
+      }
+
+      this.stats.tload = performance.now();
+      const length = data.byteLength || data.length || 0;
+      this.stats.loaded = length;
+      this.stats.total = length;
+
+      callbacks.onSuccess({ url: res.url, data }, this.stats, context, res);
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      callbacks.onError({ code: 0, text: err.message }, context, null);
+    }
+  }
+}
+
+/**
  * Open Video Preview Modal.
  */
 async function openPreview(item) {
@@ -122,6 +195,8 @@ async function openPreview(item) {
 
   let chosenVideoUrl = item.selectedVariantUrl || item.url;
   let chosenAudioUrl = item.selectedAudioUrl || item.audioUrl;
+  const masterPlaylistUrl = item.masterUrl || (item.isMaster ? item.url : null);
+  const targetHeaderUrl = masterPlaylistUrl || chosenVideoUrl;
 
   modal.style.display = 'flex';
   statusEl.style.display = 'block';
@@ -134,10 +209,11 @@ async function openPreview(item) {
     chrome.runtime.sendMessage({
       type: 'PREPARE_STREAM_HEADERS',
       payload: {
-        url: chosenVideoUrl,
+        url: targetHeaderUrl,
         referer: item.referer,
         origin: item.origin,
-        audioUrl: chosenAudioUrl
+        audioUrl: chosenAudioUrl,
+        tabId: activeTabId
       }
     }, () => {
       clearTimeout(timer);
@@ -221,7 +297,6 @@ async function openPreview(item) {
   // If master playlist exists, Hls.js MUST load master playlist to retain audio track syncing.
   // Quality resolution switching is then handled via Hls.js level selection without losing audio.
   let effectiveSourceUrl = chosenVideoUrl;
-  const masterPlaylistUrl = item.masterUrl || (item.isMaster ? item.url : null);
   if (masterPlaylistUrl) {
     effectiveSourceUrl = masterPlaylistUrl;
   } else if (chosenAudioUrl && chosenAudioUrl !== chosenVideoUrl && !chosenVideoUrl.includes('master')) {
@@ -255,9 +330,9 @@ async function openPreview(item) {
       fragLoadingTimeOut: 25000,
       fragLoadingMaxRetry: 6,
       fragLoadingRetryDelay: 500,
-      xhrSetup: (xhr) => {
-        xhr.withCredentials = false;
-      }
+      loader: FetchLoader,
+      pLoader: FetchLoader,
+      fLoader: FetchLoader
     });
 
     currentHlsInstance.loadSource(effectiveSourceUrl);
@@ -288,13 +363,18 @@ async function openPreview(item) {
       console.warn('HLS preview error:', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
-          // Recovery Stage 1: Auto-retry via Hls.js startLoad
+          // Recovery Stage 1: Auto-retry via Hls.js loadSource or startLoad
           if (retryCount < 2) {
             retryCount++;
             console.log(`[Preview] Network recovery attempt ${retryCount}/2...`);
             statusEl.innerText = `Reconnecting stream (attempt ${retryCount}/2)...`;
             setTimeout(() => {
-              if (currentHlsInstance) currentHlsInstance.startLoad();
+              if (!currentHlsInstance) return;
+              if (data.details === 'manifestLoadError' || data.details === 'levelLoadError' || data.details === 'audioTrackLoadError') {
+                currentHlsInstance.loadSource(effectiveSourceUrl);
+              } else {
+                currentHlsInstance.startLoad();
+              }
             }, 600);
             return;
           }
