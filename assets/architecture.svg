@@ -130,10 +130,12 @@
     <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#a5b4fc">1. SOUL BROWSER REA SOURCE</text>
     
     <!-- 3D Isometric Mini Prism 1 -->
-    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
-      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop1)" />
-      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft1)" />
-      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight1)" />
+    <g transform="translate(225, 12) scale(0.4)">
+      <g class="floating-3d">
+        <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop1)" />
+        <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft1)" />
+        <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight1)" />
+      </g>
     </g>
 
     <!-- Item A -->
@@ -174,10 +176,12 @@
     <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#6ee7b7">2. 3-TIER MV3 SNIFFER</text>
 
     <!-- 3D Isometric Mini Prism 2 -->
-    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
-      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop2)" />
-      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft2)" />
-      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight2)" />
+    <g transform="translate(225, 12) scale(0.4)">
+      <g class="floating-3d">
+        <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop2)" />
+        <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft2)" />
+        <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight2)" />
+      </g>
     </g>
 
     <!-- Tier 1 -->
@@ -215,10 +219,12 @@
     <text x="14" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#7dd3fc">3. PURE JS DUAL-TRACK MUXER</text>
 
     <!-- 3D Isometric Mini Prism 3 -->
-    <g transform="translate(225, 12) scale(0.4)" class="floating-3d">
-      <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop3)" />
-      <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft3)" />
-      <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight3)" />
+    <g transform="translate(225, 12) scale(0.4)">
+      <g class="floating-3d">
+        <polygon points="15,0 30,8 15,16 0,8" fill="url(#isoTop3)" />
+        <polygon points="0,8 15,16 15,32 0,24" fill="url(#isoLeft3)" />
+        <polygon points="15,16 30,8 30,24 15,32" fill="url(#isoRight3)" />
+      </g>
     </g>
 
     <!-- Step A -->

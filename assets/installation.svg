@@ -5,10 +5,6 @@
         0% { stroke-dashoffset: 2400; }
         100% { stroke-dashoffset: 0; }
       }
-      @keyframes pulseGlow {
-        0%, 100% { opacity: 0.2; filter: drop-shadow(0 0 8px rgba(99,102,241,0.4)); }
-        50% { opacity: 0.45; filter: drop-shadow(0 0 18px rgba(56,189,248,0.7)); }
-      }
       @keyframes flowData {
         0% { stroke-dashoffset: 80; }
         100% { stroke-dashoffset: 0; }
@@ -17,6 +13,28 @@
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-5px); }
       }
+
+      /* Synchronized Step Transition Sequence (12s total loop, 3s per step) */
+      @keyframes stepGlow1 {
+        0%, 25% { stroke: #6366f1; stroke-width: 2px; filter: drop-shadow(0 0 12px rgba(99,102,241,0.7)); }
+        30%, 100% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+      }
+      @keyframes stepGlow2 {
+        0%, 25% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        28%, 50% { stroke: #38bdf8; stroke-width: 2px; filter: drop-shadow(0 0 12px rgba(56,189,248,0.7)); }
+        55%, 100% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+      }
+      @keyframes stepGlow3 {
+        0%, 50% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        53%, 75% { stroke: #c084fc; stroke-width: 2px; filter: drop-shadow(0 0 12px rgba(192,132,252,0.7)); }
+        80%, 100% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+      }
+      @keyframes stepGlow4 {
+        0%, 75% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        78%, 98% { stroke: #34d399; stroke-width: 2.2px; filter: drop-shadow(0 0 14px rgba(52,211,153,0.8)); }
+        100% { stroke: #334155; stroke-width: 1.2px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+      }
+
       .anim-border {
         stroke-dasharray: 220 500;
         animation: neonTrace 10s linear infinite;
@@ -27,6 +45,18 @@
       }
       .card-float {
         animation: floatCard 4.5s ease-in-out infinite;
+      }
+      .active-border-1 {
+        animation: stepGlow1 12s ease-in-out infinite;
+      }
+      .active-border-2 {
+        animation: stepGlow2 12s ease-in-out infinite;
+      }
+      .active-border-3 {
+        animation: stepGlow3 12s ease-in-out infinite;
+      }
+      .active-border-4 {
+        animation: stepGlow4 12s ease-in-out infinite;
       }
     </style>
 
@@ -90,10 +120,10 @@
     <rect width="210" height="24" rx="12" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
     <text x="14" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#a5b4fc" letter-spacing="0.5">⚡ FAST 4-STEP PC SETUP</text>
     <text x="0" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="800" fill="#f8fafc">Step-by-Step Desktop PC Installation</text>
-    <text x="0" y="76" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">Quick 60-second setup. Compatible with Chrome, Edge, Brave, Opera, Vivaldi &amp; Arc Browser.</text>
+    <text x="0" y="76" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">Sequential transition pipeline. Compatible with Chrome, Edge, Brave, Opera, Vivaldi &amp; Arc Browser.</text>
   </g>
 
-  <!-- CONNECTING ANIMATED DATA PIPES (Centered behind cards) -->
+  <!-- CONNECTING ANIMATED DATA PIPES (Aligned behind cards) -->
   <g transform="translate(44, 255)">
     <!-- Base track pipe -->
     <line x1="80" y1="0" x2="932" y2="0" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
@@ -101,229 +131,237 @@
     <line x1="80" y1="0" x2="932" y2="0" stroke="url(#pipeBeam)" stroke-width="3" stroke-linecap="round" class="data-pipe"/>
   </g>
 
-  <!-- 4 STEP CARDS (Symmetrically spaced: x = 44, 303, 562, 821, width = 235 each) -->
+  <!-- 4 STEP CARDS (Positioned via parent g, animated via child g to prevent CSS transform override) -->
   <g transform="translate(44, 120)">
     
     <!-- ==================== STEP 1: CLONE REPOSITORY ==================== -->
-    <g transform="translate(0, 0)" class="card-float" filter="url(#boxShadow)">
-      <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2"/>
-      
-      <!-- Card Header: Number Badge & Step Title -->
-      <g transform="translate(14, 14)">
-        <rect width="36" height="36" rx="10" fill="url(#badge1)"/>
-        <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#ffffff" text-anchor="middle">01</text>
-        <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Clone Repo</text>
-        <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#818cf8">Terminal / Git CLI</text>
-      </g>
-
-      <!-- Decorated Terminal Window Graphic -->
-      <g transform="translate(14, 62)">
-        <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
+    <g transform="translate(0, 0)">
+      <g class="card-float" filter="url(#boxShadow)">
+        <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2" class="active-border-1"/>
         
-        <!-- Terminal Titlebar -->
-        <rect width="207" height="22" rx="8" fill="#0f172a"/>
-        <rect y="16" width="207" height="6" fill="#0f172a"/>
-        <!-- Window Controls -->
-        <circle cx="12" cy="11" r="3.5" fill="#ef4444"/>
-        <circle cx="22" cy="11" r="3.5" fill="#f59e0b"/>
-        <circle cx="32" cy="11" r="3.5" fill="#10b981"/>
-        <text x="103" y="15" font-family="monospace" font-size="9" fill="#64748b" text-anchor="middle">bash ~/downloader</text>
-
-        <!-- Command 1 with prompt -->
-        <text x="10" y="38" font-family="monospace" font-size="10" font-weight="700" fill="#38bdf8">❯</text>
-        <text x="22" y="38" font-family="monospace" font-size="9" font-weight="600" fill="#e2e8f0">git clone</text>
-        <text x="76" y="38" font-family="monospace" font-size="8.5" fill="#94a3b8">https://...</text>
-        
-        <!-- Command 2 -->
-        <text x="10" y="56" font-family="monospace" font-size="10" font-weight="700" fill="#38bdf8">❯</text>
-        <text x="22" y="56" font-family="monospace" font-size="9" font-weight="600" fill="#e2e8f0">cd</text>
-        <text x="40" y="56" font-family="monospace" font-size="9" fill="#a5b4fc">Downloader_Ext</text>
-
-        <!-- Output Pill -->
-        <g transform="translate(10, 68)">
-          <rect width="187" height="32" rx="4" fill="#1e1b4b" stroke="#312e81" stroke-width="0.8"/>
-          <text x="8" y="14" font-family="monospace" font-size="8" fill="#818cf8">Receiving objects: 100%</text>
-          <text x="8" y="25" font-family="monospace" font-size="8" font-weight="700" fill="#34d399">✓ Ready in ./dist directory</text>
+        <!-- Card Header: Number Badge & Step Title -->
+        <g transform="translate(14, 14)">
+          <rect width="36" height="36" rx="10" fill="url(#badge1)"/>
+          <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#ffffff" text-anchor="middle">01</text>
+          <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Clone Repo</text>
+          <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#818cf8">Terminal / Git CLI</text>
         </g>
-      </g>
 
-      <!-- Decorated Instructions -->
-      <g transform="translate(14, 186)">
-        <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">1. Clone or download ZIP</text>
-        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Extract the repo files to any</text>
-        <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">local folder on your PC.</text>
-        
-        <!-- Command Pill -->
-        <g transform="translate(0, 58)">
-          <rect width="207" height="26" rx="5" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-          <text x="10" y="17" font-family="monospace" font-size="9.5" fill="#38bdf8">git clone &lt;repo-url&gt;</text>
-          <rect x="160" y="4" width="40" height="18" rx="3" fill="#1e293b"/>
-          <text x="180" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#94a3b8" text-anchor="middle">COPY</text>
+        <!-- Decorated Terminal Window Graphic -->
+        <g transform="translate(14, 62)">
+          <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
+          
+          <!-- Terminal Titlebar -->
+          <rect width="207" height="22" rx="8" fill="#0f172a"/>
+          <rect y="16" width="207" height="6" fill="#0f172a"/>
+          <!-- Window Controls -->
+          <circle cx="12" cy="11" r="3.5" fill="#ef4444"/>
+          <circle cx="22" cy="11" r="3.5" fill="#f59e0b"/>
+          <circle cx="32" cy="11" r="3.5" fill="#10b981"/>
+          <text x="103" y="15" font-family="monospace" font-size="9" fill="#64748b" text-anchor="middle">bash ~/downloader</text>
+
+          <!-- Command 1 with prompt -->
+          <text x="10" y="38" font-family="monospace" font-size="10" font-weight="700" fill="#38bdf8">❯</text>
+          <text x="22" y="38" font-family="monospace" font-size="9" font-weight="600" fill="#e2e8f0">git clone</text>
+          <text x="76" y="38" font-family="monospace" font-size="8.5" fill="#94a3b8">https://...</text>
+          
+          <!-- Command 2 -->
+          <text x="10" y="56" font-family="monospace" font-size="10" font-weight="700" fill="#38bdf8">❯</text>
+          <text x="22" y="56" font-family="monospace" font-size="9" font-weight="600" fill="#e2e8f0">cd</text>
+          <text x="40" y="56" font-family="monospace" font-size="9" fill="#a5b4fc">Downloader_Ext</text>
+
+          <!-- Output Pill -->
+          <g transform="translate(10, 68)">
+            <rect width="187" height="32" rx="4" fill="#1e1b4b" stroke="#312e81" stroke-width="0.8"/>
+            <text x="8" y="14" font-family="monospace" font-size="8" fill="#818cf8">Receiving objects: 100%</text>
+            <text x="8" y="25" font-family="monospace" font-size="8" font-weight="700" fill="#34d399">✓ Ready in ./dist directory</text>
+          </g>
+        </g>
+
+        <!-- Decorated Instructions -->
+        <g transform="translate(14, 186)">
+          <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">1. Clone or download ZIP</text>
+          <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Extract the repo files to any</text>
+          <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">local folder on your PC.</text>
+          
+          <!-- Command Pill -->
+          <g transform="translate(0, 58)">
+            <rect width="207" height="26" rx="5" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+            <text x="10" y="17" font-family="monospace" font-size="9.5" fill="#38bdf8">git clone &lt;repo-url&gt;</text>
+            <rect x="160" y="4" width="40" height="18" rx="3" fill="#1e293b"/>
+            <text x="180" y="16" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#94a3b8" text-anchor="middle">COPY</text>
+          </g>
         </g>
       </g>
     </g>
 
     <!-- ==================== STEP 2: OPEN EXTENSIONS ==================== -->
-    <g transform="translate(259, 0)" class="card-float" filter="url(#boxShadow)" style="animation-delay: 0.8s;">
-      <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2"/>
-      
-      <!-- Card Header -->
-      <g transform="translate(14, 14)">
-        <rect width="36" height="36" rx="10" fill="url(#badge2)"/>
-        <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#0f172a" text-anchor="middle">02</text>
-        <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Extensions Bar</text>
-        <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#38bdf8">Browser URL bar</text>
-      </g>
-
-      <!-- Decorated Address Bar Graphic -->
-      <g transform="translate(14, 62)">
-        <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
+    <g transform="translate(259, 0)">
+      <g class="card-float" filter="url(#boxShadow)">
+        <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2" class="active-border-2"/>
         
-        <!-- Browser Header with Nav Icons -->
-        <rect width="207" height="24" rx="8" fill="#0f172a"/>
-        <rect y="18" width="207" height="6" fill="#0f172a"/>
-        <!-- Nav buttons: back, forward, reload -->
-        <circle cx="14" cy="12" r="4" fill="#334155"/>
-        <circle cx="26" cy="12" r="4" fill="#334155"/>
-        <circle cx="38" cy="12" r="4" fill="#334155"/>
-
-        <!-- Styled Omnibox -->
-        <g transform="translate(10, 32)">
-          <rect width="187" height="32" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
-          <text x="8" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11">🔒</text>
-          <text x="24" y="20" font-family="monospace" font-size="9" font-weight="700" fill="#38bdf8">chrome://extensions</text>
+        <!-- Card Header -->
+        <g transform="translate(14, 14)">
+          <rect width="36" height="36" rx="10" fill="url(#badge2)"/>
+          <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#0f172a" text-anchor="middle">02</text>
+          <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Extensions Bar</text>
+          <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#38bdf8">Browser URL bar</text>
         </g>
 
-        <!-- Keyboard Enter Badge -->
-        <g transform="translate(10, 72)">
-          <rect width="187" height="28" rx="5" fill="#0c4a6e" stroke="#0284c7" stroke-width="0.8"/>
-          <text x="12" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#bae6fd">Press</text>
-          <rect x="48" y="5" width="46" height="18" rx="4" fill="#0284c7"/>
-          <text x="71" y="17" font-family="monospace" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">↵ Enter</text>
-          <text x="100" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#bae6fd">to navigate</text>
+        <!-- Decorated Address Bar Graphic -->
+        <g transform="translate(14, 62)">
+          <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
+          
+          <!-- Browser Header with Nav Icons -->
+          <rect width="207" height="24" rx="8" fill="#0f172a"/>
+          <rect y="18" width="207" height="6" fill="#0f172a"/>
+          <!-- Nav buttons: back, forward, reload -->
+          <circle cx="14" cy="12" r="4" fill="#334155"/>
+          <circle cx="26" cy="12" r="4" fill="#334155"/>
+          <circle cx="38" cy="12" r="4" fill="#334155"/>
+
+          <!-- Styled Omnibox -->
+          <g transform="translate(10, 32)">
+            <rect width="187" height="32" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+            <text x="8" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11">🔒</text>
+            <text x="24" y="20" font-family="monospace" font-size="9" font-weight="700" fill="#38bdf8">chrome://extensions</text>
+          </g>
+
+          <!-- Keyboard Enter Badge -->
+          <g transform="translate(10, 72)">
+            <rect width="187" height="28" rx="5" fill="#0c4a6e" stroke="#0284c7" stroke-width="0.8"/>
+            <text x="12" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#bae6fd">Press</text>
+            <rect x="48" y="5" width="46" height="18" rx="4" fill="#0284c7"/>
+            <text x="71" y="17" font-family="monospace" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle">↵ Enter</text>
+            <text x="100" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" fill="#bae6fd">to navigate</text>
+          </g>
         </g>
-      </g>
 
-      <!-- Decorated Instructions -->
-      <g transform="translate(14, 186)">
-        <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">2. Open Extension Hub</text>
-        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Paste into your address bar:</text>
-        
-        <!-- Browser Pills -->
-        <g transform="translate(0, 42)">
-          <rect width="98" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-          <text x="6" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#38bdf8">🌐 Chrome / Brave</text>
+        <!-- Decorated Instructions -->
+        <g transform="translate(14, 186)">
+          <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">2. Open Extension Hub</text>
+          <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Paste into your address bar:</text>
+          
+          <!-- Browser Pills -->
+          <g transform="translate(0, 42)">
+            <rect width="98" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+            <text x="6" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#38bdf8">🌐 Chrome / Brave</text>
 
-          <rect x="104" y="0" width="103" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-          <text x="110" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#38bdf8">🌐 Edge / Opera</text>
-        </g>
+            <rect x="104" y="0" width="103" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+            <text x="110" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="600" fill="#38bdf8">🌐 Edge / Opera</text>
+          </g>
 
-        <!-- Address Bar Quick Link -->
-        <g transform="translate(0, 68)">
-          <rect width="207" height="24" rx="5" fill="#0f172a" stroke="#0284c7" stroke-width="0.8"/>
-          <text x="10" y="16" font-family="monospace" font-size="9" fill="#7dd3fc">edge://extensions</text>
+          <!-- Address Bar Quick Link -->
+          <g transform="translate(0, 68)">
+            <rect width="207" height="24" rx="5" fill="#0f172a" stroke="#0284c7" stroke-width="0.8"/>
+            <text x="10" y="16" font-family="monospace" font-size="9" fill="#7dd3fc">edge://extensions</text>
+          </g>
         </g>
       </g>
     </g>
 
     <!-- ==================== STEP 3: DEVELOPER MODE ==================== -->
-    <g transform="translate(518, 0)" class="card-float" filter="url(#boxShadow)" style="animation-delay: 1.6s;">
-      <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2"/>
-      
-      <!-- Card Header -->
-      <g transform="translate(14, 14)">
-        <rect width="36" height="36" rx="10" fill="url(#badge3)"/>
-        <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#ffffff" text-anchor="middle">03</text>
-        <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Developer Mode</text>
-        <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#c084fc">Top-Right Toggle</text>
-      </g>
+    <g transform="translate(518, 0)">
+      <g class="card-float" filter="url(#boxShadow)">
+        <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#334155" stroke-width="1.2" class="active-border-3"/>
+        
+        <!-- Card Header -->
+        <g transform="translate(14, 14)">
+          <rect width="36" height="36" rx="10" fill="url(#badge3)"/>
+          <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#ffffff" text-anchor="middle">03</text>
+          <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">Developer Mode</text>
+          <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#c084fc">Top-Right Toggle</text>
+        </g>
 
-      <!-- Decorated Switch Graphic -->
-      <g transform="translate(14, 62)">
-        <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
-        
-        <!-- Header Pill -->
-        <text x="12" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#e2e8f0">Settings Panel</text>
-        
-        <!-- Toggle Control Row -->
-        <g transform="translate(10, 36)">
-          <rect width="187" height="38" rx="6" fill="#0f172a" stroke="#4c1d95" stroke-width="1"/>
-          <text x="10" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="600" fill="#cbd5e1">Developer mode</text>
+        <!-- Decorated Switch Graphic -->
+        <g transform="translate(14, 62)">
+          <rect width="207" height="110" rx="8" fill="#020617" stroke="#1e293b" stroke-width="1"/>
           
-          <!-- 3D Toggle Switch ON -->
-          <g transform="translate(125, 8)">
-            <!-- Switch Track (Glow Purple) -->
-            <rect width="50" height="22" rx="11" fill="#7c3aed" stroke="#a855f7" stroke-width="1"/>
-            <!-- Switch Knob (Right position with shadow) -->
-            <circle cx="38" cy="11" r="8" fill="#ffffff" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))"/>
-            <text x="38" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="900" fill="#7c3aed" text-anchor="middle">✓</text>
+          <!-- Header Pill -->
+          <text x="12" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#e2e8f0">Settings Panel</text>
+          
+          <!-- Toggle Control Row -->
+          <g transform="translate(10, 36)">
+            <rect width="187" height="38" rx="6" fill="#0f172a" stroke="#4c1d95" stroke-width="1"/>
+            <text x="10" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="600" fill="#cbd5e1">Developer mode</text>
+            
+            <!-- 3D Toggle Switch ON -->
+            <g transform="translate(125, 8)">
+              <!-- Switch Track (Glow Purple) -->
+              <rect width="50" height="22" rx="11" fill="#7c3aed" stroke="#a855f7" stroke-width="1"/>
+              <!-- Switch Knob (Right position with shadow) -->
+              <circle cx="38" cy="11" r="8" fill="#ffffff" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))"/>
+              <text x="38" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="900" fill="#7c3aed" text-anchor="middle">✓</text>
+            </g>
+          </g>
+
+          <!-- Status Indicator -->
+          <g transform="translate(10, 80)">
+            <rect width="187" height="22" rx="4" fill="#2e1065" stroke="#7c3aed" stroke-width="0.8"/>
+            <circle cx="16" cy="11" r="3.5" fill="#10b981"/>
+            <text x="26" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#a7f3d0">State: UNLOCKED / ACTIVE</text>
           </g>
         </g>
 
-        <!-- Status Indicator -->
-        <g transform="translate(10, 80)">
-          <rect width="187" height="22" rx="4" fill="#2e1065" stroke="#7c3aed" stroke-width="0.8"/>
-          <circle cx="16" cy="11" r="3.5" fill="#10b981"/>
-          <text x="26" y="15" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#a7f3d0">State: UNLOCKED / ACTIVE</text>
-        </g>
-      </g>
-
-      <!-- Decorated Instructions -->
-      <g transform="translate(14, 186)">
-        <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">3. Toggle Switch ON</text>
-        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Located at the top right of</text>
-        <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">the extensions dashboard.</text>
-        
-        <!-- Unlocks Badge -->
-        <g transform="translate(0, 58)">
-          <rect width="207" height="26" rx="5" fill="#1e1b4b" stroke="#7c3aed" stroke-width="0.8"/>
-          <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="600" fill="#d8b4fe">🔓 Unlocks "Load unpacked"</text>
+        <!-- Decorated Instructions -->
+        <g transform="translate(14, 186)">
+          <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">3. Toggle Switch ON</text>
+          <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">Located at the top right of</text>
+          <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#94a3b8">the extensions dashboard.</text>
+          
+          <!-- Unlocks Badge -->
+          <g transform="translate(0, 58)">
+            <rect width="207" height="26" rx="5" fill="#1e1b4b" stroke="#7c3aed" stroke-width="0.8"/>
+            <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="600" fill="#d8b4fe">🔓 Unlocks "Load unpacked"</text>
+          </g>
         </g>
       </g>
     </g>
 
     <!-- ==================== STEP 4: LOAD UNPACKED ==================== -->
-    <g transform="translate(777, 0)" class="card-float" filter="url(#boxShadow)" style="animation-delay: 2.4s;">
-      <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#059669" stroke-width="1.4"/>
-      
-      <!-- Card Header -->
-      <g transform="translate(14, 14)">
-        <rect width="36" height="36" rx="10" fill="url(#badge4)"/>
-        <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#022c22" text-anchor="middle">04</text>
-        <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#34d399">Load Unpacked</text>
-        <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#10b981">Select "dist" folder</text>
-      </g>
-
-      <!-- Decorated Folder Button Graphic -->
-      <g transform="translate(14, 62)">
-        <rect width="207" height="110" rx="8" fill="#020617" stroke="#064e3b" stroke-width="1"/>
+    <g transform="translate(777, 0)">
+      <g class="card-float" filter="url(#boxShadow)">
+        <rect width="235" height="315" rx="12" fill="url(#cardBg)" stroke="#059669" stroke-width="1.4" class="active-border-4"/>
         
-        <!-- Tactile "Load unpacked" Button -->
-        <g transform="translate(10, 12)">
-          <rect width="187" height="36" rx="6" fill="#10b981" filter="drop-shadow(0 4px 6px rgba(16,185,129,0.3))"/>
-          <text x="24" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#022c22">📂 Load unpacked</text>
-          <rect x="140" y="8" width="38" height="20" rx="4" fill="#047857"/>
-          <text x="159" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#ecfdf5" text-anchor="middle">CLICK</text>
+        <!-- Card Header -->
+        <g transform="translate(14, 14)">
+          <rect width="36" height="36" rx="10" fill="url(#badge4)"/>
+          <text x="18" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#022c22" text-anchor="middle">04</text>
+          <text x="46" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#34d399">Load Unpacked</text>
+          <text x="46" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="500" fill="#10b981">Select "dist" folder</text>
         </g>
 
-        <!-- Folder Path Picker Display -->
-        <g transform="translate(10, 56)">
-          <rect width="187" height="42" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
-          <text x="8" y="18" font-family="monospace" font-size="9" font-weight="700" fill="#6ee7b7">📁 /dist/ (or root folder)</text>
-          <text x="8" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" fill="#a7f3d0">Manifest V3 · 12 Assets ready</text>
-        </g>
-      </g>
+        <!-- Decorated Folder Button Graphic -->
+        <g transform="translate(14, 62)">
+          <rect width="207" height="110" rx="8" fill="#020617" stroke="#064e3b" stroke-width="1"/>
+          
+          <!-- Tactile "Load unpacked" Button -->
+          <g transform="translate(10, 12)">
+            <rect width="187" height="36" rx="6" fill="#10b981" filter="drop-shadow(0 4px 6px rgba(16,185,129,0.3))"/>
+            <text x="24" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#022c22">📂 Load unpacked</text>
+            <rect x="140" y="8" width="38" height="20" rx="4" fill="#047857"/>
+            <text x="159" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#ecfdf5" text-anchor="middle">CLICK</text>
+          </g>
 
-      <!-- Decorated Instructions -->
-      <g transform="translate(14, 186)">
-        <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">4. Select "dist" &amp; Pin</text>
-        <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#cbd5e1">Select the folder and click</text>
-        <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#cbd5e1">the 📌 Pin icon in toolbar!</text>
-        
-        <!-- Ready Pill -->
-        <g transform="translate(0, 58)">
-          <rect width="207" height="26" rx="5" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
-          <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="800" fill="#a7f3d0">🎉 READY TO DOWNLOAD!</text>
+          <!-- Folder Path Picker Display -->
+          <g transform="translate(10, 56)">
+            <rect width="187" height="42" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="0.8"/>
+            <text x="8" y="18" font-family="monospace" font-size="9" font-weight="700" fill="#6ee7b7">📁 /dist/ (or root folder)</text>
+            <text x="8" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" fill="#a7f3d0">Manifest V3 · 12 Assets ready</text>
+          </g>
+        </g>
+
+        <!-- Decorated Instructions -->
+        <g transform="translate(14, 186)">
+          <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#34d399">4. Select "dist" &amp; Pin</text>
+          <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#cbd5e1">Select the folder and click</text>
+          <text x="0" y="45" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" fill="#cbd5e1">the 📌 Pin icon in toolbar!</text>
+          
+          <!-- Ready Pill -->
+          <g transform="translate(0, 58)">
+            <rect width="207" height="26" rx="5" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+            <text x="10" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="800" fill="#a7f3d0">🎉 READY TO DOWNLOAD!</text>
+          </g>
         </g>
       </g>
     </g>

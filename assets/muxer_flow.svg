@@ -156,10 +156,12 @@
       </g>
 
       <!-- 3D Video Isometric Cube -->
-      <g transform="translate(196, 42) scale(0.9)" class="iso-floating">
-        <polygon points="20,0 40,11 20,23 0,11" fill="url(#vIsoTop)" />
-        <polygon points="0,11 20,23 20,45 0,33" fill="url(#vIsoLeft)" />
-        <polygon points="20,23 40,11 40,33 20,45" fill="url(#vIsoRight)" />
+      <g transform="translate(196, 42) scale(0.9)">
+        <g class="iso-floating">
+          <polygon points="20,0 40,11 20,23 0,11" fill="url(#vIsoTop)" />
+          <polygon points="0,11 20,23 20,45 0,33" fill="url(#vIsoLeft)" />
+          <polygon points="20,23 40,11 40,33 20,45" fill="url(#vIsoRight)" />
+        </g>
       </g>
 
       <!-- Track Info Badge -->
@@ -186,10 +188,12 @@
       </g>
 
       <!-- 3D Audio Isometric Cube -->
-      <g transform="translate(196, 42) scale(0.9)" class="iso-floating">
-        <polygon points="20,0 40,11 20,23 0,11" fill="url(#aIsoTop)" />
-        <polygon points="0,11 20,23 20,45 0,33" fill="url(#aIsoLeft)" />
-        <polygon points="20,23 40,11 40,33 20,45" fill="url(#aIsoRight)" />
+      <g transform="translate(196, 42) scale(0.9)">
+        <g class="iso-floating">
+          <polygon points="20,0 40,11 20,23 0,11" fill="url(#aIsoTop)" />
+          <polygon points="0,11 20,23 20,45 0,33" fill="url(#aIsoLeft)" />
+          <polygon points="20,23 40,11 40,33 20,45" fill="url(#aIsoRight)" />
+        </g>
       </g>
 
       <!-- Collision Warning Badge -->
@@ -312,14 +316,16 @@
     </g>
 
     <!-- 3D Isometric Output Prism Display (Centered in Stage 3) -->
-    <g transform="translate(145, 230) scale(1.15)" class="iso-floating">
-      <!-- 3D Cube Base -->
-      <polygon points="0,-18 32,-2 0,14 -32,-2" fill="url(#outIsoTop)" />
-      <polygon points="-32,-2 0,14 0,44 -32,28" fill="url(#outIsoLeft)" />
-      <polygon points="0,14 32,-2 32,28 0,44" fill="url(#outIsoRight)" />
+    <g transform="translate(145, 230) scale(1.15)">
+      <g class="iso-floating">
+        <!-- 3D Cube Base -->
+        <polygon points="0,-18 32,-2 0,14 -32,-2" fill="url(#outIsoTop)" />
+        <polygon points="-32,-2 0,14 0,44 -32,28" fill="url(#outIsoLeft)" />
+        <polygon points="0,14 32,-2 32,28 0,44" fill="url(#outIsoRight)" />
 
-      <!-- Center MP4 Emblem -->
-      <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">MP4</text>
+        <!-- Center MP4 Emblem -->
+        <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">MP4</text>
+      </g>
     </g>
 
     <!-- Compliance & Compatibility Badges -->
